@@ -46,9 +46,8 @@ const client = new Client({
             '--disable-gpu',
             '--disable-extensions',
             '--disable-software-rasterizer'
-        ],
-        // Usar Chromium del sistema si está disponible
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || process.env.CHROME_BIN || '/nix/store/chromium/bin/chromium'
+        ]
+        // No especificar executablePath - dejar que whatsapp-web.js lo encuentre automáticamente
     }
 });
 
