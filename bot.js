@@ -47,8 +47,8 @@ const client = new Client({
             '--disable-extensions',
             '--disable-software-rasterizer'
         ],
-        // Configuración optimizada para servicios cloud
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
+        // Usar Chromium del sistema si está disponible
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || process.env.CHROME_BIN || '/nix/store/chromium/bin/chromium'
     }
 });
 
