@@ -585,16 +585,21 @@ app.get('/', async (req, res) => {
 // ============================================
 // INICIAR SERVIDOR Y BOT
 // ============================================
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.clear();
     console.log('\n' + '='.repeat(60));
     console.log('        🤖 INVITARTES WHATSAPP BOT v2.0 (CLOUD)');
     console.log('='.repeat(60) + '\n');
     console.log('🌐 Servidor iniciado en puerto:', PORT);
+    console.log('🌐 Servidor escuchando en: 0.0.0.0:' + PORT);
     console.log('🌍 Ambiente:', process.env.NODE_ENV || 'development');
     console.log('\n='.repeat(60) + '\n');
     console.log('🚀 Inicializando cliente de WhatsApp...\n');
-    
+});
+
+// Inicializar cliente después de que el servidor esté listo
+server.on('listening', () => {
+    console.log('✅ Servidor HTTP listo');
     client.initialize();
 });
 
