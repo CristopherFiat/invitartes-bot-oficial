@@ -22,7 +22,7 @@ const processingUsers = new Map();
 const client = new Client({
     authStrategy: new LocalAuth({
         dataPath: './.wwebjs_auth',
-        clientId: 'invitartes-bot'
+        clientId: 'invitartes-bot-oficial'
     }),
     puppeteer: {
         headless: true,
