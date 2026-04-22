@@ -1,37 +1,22 @@
-FROM node:20-bullseye
+FROM node:20-slim
 
-# Instalar dependencias de Chromium
 RUN apt-get update && apt-get install -y \
     chromium \
-    chromium-sandbox \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libdrm2 \
-    libxkbcommon0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    libgbm1 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libxshmfence1 \
+    fonts-freefont-ttf \
+    libxss1 \
+    --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Establecer directorio de trabajo
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
 WORKDIR /app
 
-# Copiar package.json y package-lock.json
 COPY package*.json ./
+RUN npm install --production
 
-# Instalar dependencias
-RUN npm install
-
-# Copiar el resto del código
 COPY . .
 
-# Exponer el puerto
 EXPOSE 3000
 
-# Iniciar la aplicación
-CMD ["npm", "start"]
+CMD ["node", "bot.js"]
