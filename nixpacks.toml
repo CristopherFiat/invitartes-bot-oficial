@@ -1,5 +1,8 @@
+[phases.setup]
+nixPkgs = ["nodejs_18", "chromium", "nss", "freetype", "harfbuzz", "ca-certificates", "ttf-opensans"]
+
 [phases.install]
 cmds = ["npm install"]
 
 [start]
-cmd = "npm start"
+cmd = "node bot.js"
