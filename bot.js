@@ -23,6 +23,7 @@ const client = new Client({
         clientId: 'invitartes-bot-oficial'
     }),
     puppeteer: {
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/chromium",
         headless: true,
         args: [
             '--no-sandbox',
