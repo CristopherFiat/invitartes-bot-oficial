@@ -10,8 +10,11 @@ let clientReady = false;
 let botPhoneNumber = '';
 
 const FIREBASE_URLS = {
-    imagenSobres:  'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/SOBRES%20(2).webp?alt=media&token=039116bd-eb91-49f8-bb11-17adcbe45c4e',
-    imagenQuinces: 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/QUINCES2.webp?alt=media&token=b4218fd0-3f2b-4a9a-bed0-047c70ad265c'
+    imagenSobres:   'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/SOBRES%20(2).webp?alt=media&token=039116bd-eb91-49f8-bb11-17adcbe45c4e',
+    imagenQuinces:  'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/QUINCES2.webp?alt=media&token=b4218fd0-3f2b-4a9a-bed0-047c70ad265c',
+    imagenEspanol:  'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/espaniolo.webp?alt=media&token=b3436894-5140-40e4-82a4-d9945e1c4999',
+    imagenIngles:   'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/ingles.webp?alt=media&token=bcd82e49-0fb7-4c25-8d03-5e83c484a048',
+    imagenLogo:     'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/logoinvitarts2.png?alt=media&token=58be72ff-90e4-4d8c-9dbc-0dfda66c4877'
 };
 
 const userStates      = new Map();
@@ -101,17 +104,32 @@ async function enviarMenu(userId, esEspanol) {
         const chat = await client.getChatById(userId);
         await chat.sendStateTyping();
         await sleep(1000);
-        await chat.sendMessage(
-            esEspanol
-                ? '¿En qué te puedo ayudar hoy?\n\n' +
-                  '1️⃣ Quiero conocer las invitaciones digitales\n' +
-                  '2️⃣ Prefiero hablar con un asesor\n\n' +
-                  '✍️ Escribe solo el número *1 o 2* para continuar.'
-                : 'How can I help you today?\n\n' +
-                  '1️⃣ I want to learn about digital invitations\n' +
-                  '2️⃣ I prefer to speak with an advisor\n\n' +
-                  '✍️ Type only the number *1 or 2* to continue.'
-        );
+        try {
+            const logo = await MessageMedia.fromUrl(FIREBASE_URLS.imagenLogo);
+            await chat.sendMessage(logo, {
+                caption: esEspanol
+                    ? '¿En qué te puedo ayudar hoy?\n\n' +
+                      '1️⃣ Quiero conocer las invitaciones digitales\n' +
+                      '2️⃣ Prefiero hablar con un asesor\n\n' +
+                      '✍️ Escribe solo el número *1 o 2* para continuar.'
+                    : 'How can I help you today?\n\n' +
+                      '1️⃣ I want to learn about digital invitations\n' +
+                      '2️⃣ I prefer to speak with an advisor\n\n' +
+                      '✍️ Type only the number *1 or 2* to continue.'
+            });
+        } catch {
+            await chat.sendMessage(
+                esEspanol
+                    ? '¿En qué te puedo ayudar hoy?\n\n' +
+                      '1️⃣ Quiero conocer las invitaciones digitales\n' +
+                      '2️⃣ Prefiero hablar con un asesor\n\n' +
+                      '✍️ Escribe solo el número *1 o 2* para continuar.'
+                    : 'How can I help you today?\n\n' +
+                      '1️⃣ I want to learn about digital invitations\n' +
+                      '2️⃣ I prefer to speak with an advisor\n\n' +
+                      '✍️ Type only the number *1 or 2* to continue.'
+            );
+        }
         console.log(`✅ Menú enviado a: ${userId}`);
     } catch (err) {
         console.error(`❌ Error menú ${userId}:`, err.message);
@@ -126,11 +144,12 @@ async function enviarSecuencia(userId, esEspanol) {
         const FORM = 'https://invitarts.com/formulario/';
         console.log(`📤 Iniciando secuencia: ${userId} | ${esEspanol ? 'ES 🇪🇸' : 'EN 🇺🇸'}`);
 
+        // 1 — Presentación
         await chat.sendStateTyping();
         await sleep(1500);
         await chat.sendMessage(
             esEspanol
-                ? '¡Hola! 👋 Te saludamos de *Invitartes*, con gusto te contamos sobre nuestras invitaciones digitales ✨\n\n' +
+                ? '¡Hola! 👋 Te saludamos de *Invitarts*, con gusto te contamos sobre nuestras invitaciones digitales ✨\n\n' +
                   '*¿QUÉ INCLUYE TU INVITACIÓN?*\n\n' +
                   '🎨 Diseño 100% personalizado a tu estilo\n' +
                   '🎵 Música, fotos y videos incluidos\n' +
@@ -140,7 +159,7 @@ async function enviarSecuencia(userId, esEspanol) {
                   '✅ Código QR para confirmar asistencia y validar entrada el día del evento\n' +
                   '⬇️ Descarga de fotos directo desde la plataforma\n' +
                   '🌍 Compártela por WhatsApp o redes en segundos'
-                : 'Hello! 👋 Greetings from *Invitartes*, we are happy to tell you about our digital invitations ✨\n\n' +
+                : 'Hello! 👋 Greetings from *Invitarts*, we are happy to tell you about our digital invitations ✨\n\n' +
                   '*✨ WHAT\'S INCLUDED?*\n\n' +
                   '🎨 100% custom design, your style\n' +
                   '🎵 Music, photos and videos included\n' +
@@ -153,51 +172,66 @@ async function enviarSecuencia(userId, esEspanol) {
         );
         console.log(`  ✓ ${userId}: 1 — Presentación`);
 
+        // 2 — Ejemplo 1: Boda
         await chat.sendStateTyping();
         await sleep(2000);
         try {
             const img1 = await MessageMedia.fromUrl(FIREBASE_URLS.imagenSobres);
             await chat.sendMessage(img1, {
                 caption: esEspanol
-                    ? '💫 *El amor tiene fecha.*\n\nJosé & María están escribiendo el capítulo más bonito de su historia, y quieren que tú lo vivas con ellos.\n\nEntra a su invitación digital, confirma tu asistencia y prepárate para una celebración inolvidable. 🥂🤍\n\n👉 https://invitarts.com/boda-de-jose-maria/'
-                    : '💫 *Love has a date.*\n\nJosé & María are writing the most beautiful chapter of their story, and they want you to live it with them.\n\nOpen their digital invitation, confirm your attendance and get ready for an unforgettable celebration. 🥂🤍\n\n👉 https://invitarts.com/boda-de-jose-maria/'
+                    ? '*Ejemplo 1*\n💫 *El amor tiene fecha.*\n\nJosé & María están escribiendo el capítulo más bonito de su historia, y quieren que tú lo vivas con ellos.\n\nEntra a su invitación digital, confirma tu asistencia y prepárate para una celebración inolvidable. 🥂🤍\n\n👉 https://invitarts.com/boda-de-jose-maria/'
+                    : '*Example 1*\n💫 *Love has a date.*\n\nJosé & María are writing the most beautiful chapter of their story, and they want you to live it with them.\n\nOpen their digital invitation, confirm your attendance and get ready for an unforgettable celebration. 🥂🤍\n\n👉 https://invitarts.com/boda-de-jose-maria/'
             });
         } catch {
             await chat.sendMessage(
                 esEspanol
-                    ? '💫 *El amor tiene fecha.*\n\n👉 https://invitarts.com/boda-de-jose-maria/'
-                    : '💫 *Love has a date.*\n\n👉 https://invitarts.com/boda-de-jose-maria/'
+                    ? '*Ejemplo 1*\n💫 *El amor tiene fecha.*\n\n👉 https://invitarts.com/boda-de-jose-maria/'
+                    : '*Example 1*\n💫 *Love has a date.*\n\n👉 https://invitarts.com/boda-de-jose-maria/'
             );
         }
-        console.log(`  ✓ ${userId}: 2 — Imagen Boda`);
+        console.log(`  ✓ ${userId}: 2 — Ejemplo 1 Boda`);
 
+        // 3 — Ejemplo 2: Quinceañera
         await chat.sendStateTyping();
         await sleep(2000);
         try {
             const img2 = await MessageMedia.fromUrl(FIREBASE_URLS.imagenQuinces);
             await chat.sendMessage(img2, {
                 caption: esEspanol
-                    ? '👸🏻✨ *Una princesa está a punto de convertirse en reina...*\n\nMilenna cumple XV años y quiere celebrarlo rodeada de las personas que más quiere. ¿Estás listo para ser parte de esta noche inolvidable?\n\nEntra a su invitación digital, confirma tu asistencia y prepárate para una fiesta que se quedará en tu corazón. 🎉🌸\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
-                    : '👸🏻✨ *A princess is about to become a queen...*\n\nMilenna is turning XV and wants to celebrate surrounded by the people she loves most. Are you ready to be part of this unforgettable night?\n\nOpen her digital invitation, confirm your attendance and get ready for a party that will stay in your heart. 🎉🌸\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
+                    ? '*Ejemplo 2*\n👸🏻✨ *Una princesa está a punto de convertirse en reina...*\n\nMilenna cumple XV años y quiere celebrarlo rodeada de las personas que más quiere. ¿Estás listo para ser parte de esta noche inolvidable?\n\nEntra a su invitación digital, confirma tu asistencia y prepárate para una fiesta que se quedará en tu corazón. 🎉🌸\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
+                    : '*Example 2*\n👸🏻✨ *A princess is about to become a queen...*\n\nMilenna is turning XV and wants to celebrate surrounded by the people she loves most. Are you ready to be part of this unforgettable night?\n\nOpen her digital invitation, confirm your attendance and get ready for a party that will stay in your heart. 🎉🌸\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
             });
         } catch {
             await chat.sendMessage(
                 esEspanol
-                    ? '👸🏻✨ *Una princesa está a punto de convertirse en reina...*\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
-                    : '👸🏻✨ *A princess is about to become a queen...*\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
+                    ? '*Ejemplo 2*\n👸🏻✨ *Una princesa está a punto de convertirse en reina...*\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
+                    : '*Example 2*\n👸🏻✨ *A princess is about to become a queen...*\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
             );
         }
-        console.log(`  ✓ ${userId}: 3 — Imagen Quinceañera`);
+        console.log(`  ✓ ${userId}: 3 — Ejemplo 2 Quinceañera`);
 
+        // 4 — Link plataforma con imagen
         await chat.sendStateTyping();
         await sleep(2000);
-        await chat.sendMessage(
-            esEspanol
-                ? '🔗 Conoce cómo funciona nuestra plataforma y las características detalladas de cada paquete:\n\n👉 https://invitarts.com/nuestra-plataforma/'
-                : '🔗 Learn how our platform works and see the detailed features of each package:\n\n👉 https://invitarts.com/nuestra-plataforma/'
-        );
-        console.log(`  ✓ ${userId}: 4 — Link plataforma`);
+        try {
+            const imgPlataforma = await MessageMedia.fromUrl(
+                esEspanol ? FIREBASE_URLS.imagenEspanol : FIREBASE_URLS.imagenIngles
+            );
+            await chat.sendMessage(imgPlataforma, {
+                caption: esEspanol
+                    ? '🔗 Conoce cómo funciona nuestra plataforma y las características detalladas de cada paquete:\n\n👉 https://invitarts.com/nuestra-plataforma/'
+                    : '🔗 Learn how our platform works and see the detailed features of each package:\n\n👉 https://invitarts.com/nuestra-plataforma/'
+            });
+        } catch {
+            await chat.sendMessage(
+                esEspanol
+                    ? '🔗 Conoce cómo funciona nuestra plataforma y las características detalladas de cada paquete:\n\n👉 https://invitarts.com/nuestra-plataforma/'
+                    : '🔗 Learn how our platform works and see the detailed features of each package:\n\n👉 https://invitarts.com/nuestra-plataforma/'
+            );
+        }
+        console.log(`  ✓ ${userId}: 4 — Plataforma con imagen`);
 
+        // 5 — Paquetes
         await chat.sendStateTyping();
         await sleep(2000);
         await chat.sendMessage(
@@ -227,6 +261,7 @@ async function enviarSecuencia(userId, esEspanol) {
         );
         console.log(`  ✓ ${userId}: 5 — Paquetes`);
 
+        // 6 — Formulario
         await chat.sendStateTyping();
         await sleep(2000);
         await chat.sendMessage(
@@ -251,14 +286,15 @@ async function enviarSecuencia(userId, esEspanol) {
         }
         console.log(`✅ Secuencia completa: ${userId}\n`);
 
+        // Seguimiento 1 — 7 minutos
         setTimeout(async () => {
             const e = userStates.get(userId);
             if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && !e.seguimiento1Enviado) {
                 try {
                     await chat.sendMessage(
                         esEspanol
-                            ? '¡Hola! 👋 Soy *Cisne* de *Invitartes*.\n\n¿Te quedó alguna duda sobre los paquetes o el proceso? Estoy aquí para ayudarte con todo lo que necesites. 😊\n\nCuéntame, ¿para qué tipo de evento estás pensando tu invitación? 🎉'
-                            : 'Hello! 👋 I am *Cisne* from *Invitartes*.\n\nDo you have any questions about the packages or the process? I am here to help you with everything you need. 😊\n\nTell me, what type of event are you planning your invitation for? 🎉'
+                            ? '¡Hola! 👋 Soy *Cisne* de *Invitarts*.\n\n¿Te quedó alguna duda sobre los paquetes o el proceso? Estoy aquí para ayudarte con todo lo que necesites. 😊\n\nCuéntame, ¿para qué tipo de evento estás pensando tu invitación? 🎉'
+                            : 'Hello! 👋 I am *Cisne* from *Invitarts*.\n\nDo you have any questions about the packages or the process? I am here to help you with everything you need. 😊\n\nTell me, what type of event are you planning your invitation for? 🎉'
                     );
                     e.seguimiento1Enviado = true;
                     console.log(`📞 Seguimiento 1 → ${userId}`);
@@ -266,6 +302,7 @@ async function enviarSecuencia(userId, esEspanol) {
             }
         }, 7 * 60 * 1000);
 
+        // Seguimiento 2 — 14 minutos
         setTimeout(async () => {
             const e = userStates.get(userId);
             if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && e.seguimiento1Enviado && !e.seguimiento2Enviado) {
@@ -491,7 +528,7 @@ app.get('/health', (req, res) => {
 });
 
 const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTES BOT OFICIAL v2.0');
+    console.log('\n🤖 INVITARTS BOT OFICIAL v2.1');
     console.log(`🌐 Puerto: ${PORT}`);
     console.log('🚀 Inicializando WhatsApp...\n');
 });
