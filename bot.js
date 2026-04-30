@@ -31,10 +31,20 @@ async function sendText(jid, text) {
 async function sendImage(jid, url, caption) {
     if (!sock) return;
     try {
-        await sock.sendMessage(jid, { image: { url }, caption });
+        const response = await fetch(url);
+        const buffer = Buffer.from(await response.arrayBuffer());
+        await sock.sendMessage(jid, { image: buffer, caption });
     } catch {
         await sendText(jid, caption);
     }
+}
+
+
+
+
+
+
+
 }
 
 async function enviarSelectorIdioma(userId) {
