@@ -146,7 +146,13 @@ async function enviarSecuencia(userId, esEspanol) {
                   '*CLÁSICO — $100 USD*\nInvitación completa basada en plantilla con colores y animaciones personalizadas. Incluye música, Maps, cuenta regresiva, regalos, Google Calendar y más.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
                   '*PREMIUM — $175 USD* ⭐ _(Más popular)_\nDiseño completamente personalizado, invitaciones ilimitadas, plataforma privada con dashboard, QR, exportar PDF, hospedaje, mesa y canción en tiempo real. Hasta 2 idiomas.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
                   '*PRESTIGE — $575 USD* 👑 _(Máximo nivel)_\nPágina diseñada desde cero, invitaciones ilimitadas + hasta 4 idiomas, dominio propio opcional, secciones ilimitadas y animación de apertura a medida.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
-                  '💳 _Pago único · Sin suscripción_'
+                  '💳 *Opciones de pago:*
+
+1️⃣ *Pago parcial:* puede abonar $30 al inicio y cancelar el valor restante al momento de la entrega de sus invitaciones. Ejemplo: en el plan de $175, paga $30 al inicio y $145 al finalizar.
+
+2️⃣ *Pago total:* si realiza el pago completo desde el inicio, obtiene un 15% de descuento 🎉 Ejemplo: en el plan de $175, pagaría únicamente $149.
+
+Así puede elegir la opción que mejor se adapte a usted.'
                 : '🎁 *Our Packages*\n\n' +
                   '*CLASSIC — $100 USD*\nComplete template-based invitation with personalized colors and animations. Includes music, Maps, countdown, gifts, Google Calendar and more.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
                   '*PREMIUM — $175 USD* ⭐ _(Most popular)_\nFully custom design, unlimited invitations, private platform with dashboard, QR, PDF export, hosting, seating chart and real-time song. Up to 2 languages.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
