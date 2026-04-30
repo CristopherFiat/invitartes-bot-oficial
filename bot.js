@@ -48,7 +48,7 @@ async function enviarSelectorIdioma(userId) {
             '✍️ Type only the number *1* or *2* to continue.'
         );
     } catch (err) {
-        console.error(`❌ Error selector:`, err.message);
+        console.error('❌ Error selector:', err.message);
     } finally {
         processingUsers.delete(userId);
     }
@@ -60,14 +60,8 @@ async function enviarMenu(userId, esEspanol) {
         try {
             await sendImage(userId, FIREBASE_URLS.imagenLogo,
                 esEspanol
-                    ? '¿En qué te puedo ayudar hoy?\n\n' +
-                      '1️⃣ Quiero conocer las invitaciones digitales\n' +
-                      '2️⃣ Prefiero hablar con un asesor\n\n' +
-                      '✍️ Escribe solo el número *1 o 2* para continuar.'
-                    : 'How can I help you today?\n\n' +
-                      '1️⃣ I want to learn about digital invitations\n' +
-                      '2️⃣ I prefer to speak with an advisor\n\n' +
-                      '✍️ Type only the number *1 or 2* to continue.'
+                    ? '¿En qué te puedo ayudar hoy?\n\n1️⃣ Quiero conocer las invitaciones digitales\n2️⃣ Prefiero hablar con un asesor\n\n✍️ Escribe solo el número *1 o 2* para continuar.'
+                    : 'How can I help you today?\n\n1️⃣ I want to learn about digital invitations\n2️⃣ I prefer to speak with an advisor\n\n✍️ Type only the number *1 or 2* to continue.'
             );
         } catch {
             await sendText(userId,
@@ -77,7 +71,7 @@ async function enviarMenu(userId, esEspanol) {
             );
         }
     } catch (err) {
-        console.error(`❌ Error menú:`, err.message);
+        console.error('❌ Error menú:', err.message);
     } finally {
         processingUsers.delete(userId);
     }
@@ -85,9 +79,8 @@ async function enviarMenu(userId, esEspanol) {
 
 async function enviarSecuencia(userId, esEspanol) {
     try {
-        console.log(`📤 Secuencia: ${userId} | ${esEspanol ? 'ES' : 'EN'}`);
+        console.log('📤 Secuencia: ' + userId + ' | ' + (esEspanol ? 'ES' : 'EN'));
 
-        // 1 — Presentación
         await sleep(1500);
         await sendText(userId,
             esEspanol
@@ -102,7 +95,7 @@ async function enviarSecuencia(userId, esEspanol) {
                   '⬇️ Descarga de fotos directo desde la plataforma\n' +
                   '🌍 Compártela por WhatsApp o redes en segundos'
                 : 'Hello! 👋 Greetings from *Invitarts*, we are happy to tell you about our digital invitations ✨\n\n' +
-                  '*✨ WHAT\'S INCLUDED?*\n\n' +
+                  "*✨ WHAT'S INCLUDED?*\n\n" +
                   '🎨 100% custom design, your style\n' +
                   '🎵 Music, photos and videos included\n' +
                   '💬 All guest messages in one place\n' +
@@ -113,7 +106,6 @@ async function enviarSecuencia(userId, esEspanol) {
                   '🌍 Share via WhatsApp or social media in seconds'
         );
 
-        // 2 — Ejemplo 1: Boda
         await sleep(2000);
         await sendImage(userId, FIREBASE_URLS.imagenSobres,
             esEspanol
@@ -121,7 +113,6 @@ async function enviarSecuencia(userId, esEspanol) {
                 : '*Example 1*\n💫 *Love has a date.*\n\nJosé & María are writing the most beautiful chapter of their story, and they want you to live it with them.\n\nOpen their digital invitation, confirm your attendance and get ready for an unforgettable celebration. 🥂🤍\n\n👉 https://invitarts.com/boda-de-jose-maria/'
         );
 
-        // 3 — Ejemplo 2: Quinceañera
         await sleep(2000);
         await sendImage(userId, FIREBASE_URLS.imagenQuinces,
             esEspanol
@@ -129,7 +120,6 @@ async function enviarSecuencia(userId, esEspanol) {
                 : '*Example 2*\n👸🏻✨ *A princess is about to become a queen...*\n\nMilenna is turning XV and wants to celebrate surrounded by the people she loves most. Are you ready to be part of this unforgettable night?\n\nOpen her digital invitation, confirm your attendance and get ready for a party that will stay in your heart. 🎉🌸\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
         );
 
-        // 4 — Plataforma con imagen
         await sleep(2000);
         await sendImage(userId,
             esEspanol ? FIREBASE_URLS.imagenEspanol : FIREBASE_URLS.imagenIngles,
@@ -138,7 +128,6 @@ async function enviarSecuencia(userId, esEspanol) {
                 : '🔗 Learn how our platform works and see the detailed features of each package:\n\n👉 https://invitarts.com/nuestra-plataforma/'
         );
 
-        // 5 — Paquetes
         await sleep(2000);
         await sendText(userId,
             esEspanol
@@ -146,21 +135,20 @@ async function enviarSecuencia(userId, esEspanol) {
                   '*CLÁSICO — $100 USD*\nInvitación completa basada en plantilla con colores y animaciones personalizadas. Incluye música, Maps, cuenta regresiva, regalos, Google Calendar y más.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
                   '*PREMIUM — $175 USD* ⭐ _(Más popular)_\nDiseño completamente personalizado, invitaciones ilimitadas, plataforma privada con dashboard, QR, exportar PDF, hospedaje, mesa y canción en tiempo real. Hasta 2 idiomas.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
                   '*PRESTIGE — $575 USD* 👑 _(Máximo nivel)_\nPágina diseñada desde cero, invitaciones ilimitadas + hasta 4 idiomas, dominio propio opcional, secciones ilimitadas y animación de apertura a medida.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
-                  '💳 *Opciones de pago:*
-
-1️⃣ *Pago parcial:* puede abonar $30 al inicio y cancelar el valor restante al momento de la entrega de sus invitaciones. Ejemplo: en el plan de $175, paga $30 al inicio y $145 al finalizar.
-
-2️⃣ *Pago total:* si realiza el pago completo desde el inicio, obtiene un 15% de descuento 🎉 Ejemplo: en el plan de $175, pagaría únicamente $149.
-
-Así puede elegir la opción que mejor se adapte a usted.'
+                  '💳 *Opciones de pago:*\n\n' +
+                  '1️⃣ *Pago parcial:* puede abonar $30 al inicio y cancelar el valor restante al momento de la entrega de sus invitaciones. Ejemplo: en el plan de $175, paga $30 al inicio y $145 al finalizar.\n\n' +
+                  '2️⃣ *Pago total:* si realiza el pago completo desde el inicio, obtiene un 15% de descuento 🎉 Ejemplo: en el plan de $175, pagaría únicamente $149.\n\n' +
+                  'Así puede elegir la opción que mejor se adapte a usted.'
                 : '🎁 *Our Packages*\n\n' +
                   '*CLASSIC — $100 USD*\nComplete template-based invitation with personalized colors and animations. Includes music, Maps, countdown, gifts, Google Calendar and more.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
                   '*PREMIUM — $175 USD* ⭐ _(Most popular)_\nFully custom design, unlimited invitations, private platform with dashboard, QR, PDF export, hosting, seating chart and real-time song. Up to 2 languages.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
                   '*PRESTIGE — $575 USD* 👑 _(Maximum level)_\nPage designed from scratch, unlimited invitations + up to 4 languages, optional custom domain, unlimited sections and custom opening animation.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
-                  '💳 _One-time payment · No subscription_'
+                  '💳 *Payment options:*\n\n' +
+                  '1️⃣ *Partial payment:* you can pay $30 upfront and the remaining balance upon delivery of your invitations. Example: for the $175 plan, pay $30 now and $145 at the end.\n\n' +
+                  '2️⃣ *Full payment:* if you pay in full from the start, you get a 15% discount 🎉 Example: for the $175 plan, you would pay only $149.\n\n' +
+                  'Choose the option that best suits you.'
         );
 
-        // 6 — Formulario
         await sleep(2000);
         await sendText(userId,
             esEspanol
@@ -175,9 +163,8 @@ Así puede elegir la opción que mejor se adapte a usted.'
             estado.seguimiento1Enviado    = false;
             estado.seguimiento2Enviado    = false;
         }
-        console.log(`✅ Secuencia completa: ${userId}`);
+        console.log('✅ Secuencia completa: ' + userId);
 
-        // Seguimiento 1 — 7 minutos
         setTimeout(async () => {
             const e = userStates.get(userId);
             if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && !e.seguimiento1Enviado) {
@@ -188,11 +175,10 @@ Así puede elegir la opción que mejor se adapte a usted.'
                             : 'Hello! 👋 I am *Cisne* from *Invitarts*.\n\nDo you have any questions about the packages or the process? I am here to help. 😊\n\nTell me, what type of event are you planning your invitation for? 🎉'
                     );
                     e.seguimiento1Enviado = true;
-                } catch { console.log(`⚠️ Error seguimiento 1`); }
+                } catch { console.log('⚠️ Error seguimiento 1'); }
             }
         }, 7 * 60 * 1000);
 
-        // Seguimiento 2 — 14 minutos
         setTimeout(async () => {
             const e = userStates.get(userId);
             if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && e.seguimiento1Enviado && !e.seguimiento2Enviado) {
@@ -210,17 +196,17 @@ Así puede elegir la opción que mejor se adapte a usted.'
                               '🪑 *Table assignment* — Each guest knows exactly where to sit\n' +
                               '📲 *QR code per guest* — Validate attendance at the door\n' +
                               '🌍 *Multilingual platform* — Guests view it in their own language\n' +
-                              '📊 *Real-time dashboard* — Know who confirmed and who hasn\'t\n' +
+                              '📊 *Real-time dashboard* — Know who confirmed and who has not\n' +
                               '📸 *Shared album* — Guests upload photos from the invitation\n\n' +
                               'All from *$100 USD*. 🎯\n\nReady to get started?\n📝 ' + FORM
                     );
                     e.seguimiento2Enviado = true;
-                } catch { console.log(`⚠️ Error seguimiento 2`); }
+                } catch { console.log('⚠️ Error seguimiento 2'); }
             }
         }, 14 * 60 * 1000);
 
     } catch (err) {
-        console.error(`❌ Error secuencia:`, err.message);
+        console.error('❌ Error secuencia:', err.message);
     } finally {
         processingUsers.delete(userId);
     }
@@ -235,7 +221,7 @@ async function enviarMensajeAsesor(userId, esEspanol) {
                 : '👩🏻‍💼 Perfect! One of our advisors will contact you shortly.\n\nPlease stay online 🙏\n\nIt will be a pleasure to assist you. ✨'
         );
     } catch (err) {
-        console.error(`❌ Error asesor:`, err.message);
+        console.error('❌ Error asesor:', err.message);
     } finally {
         processingUsers.delete(userId);
     }
@@ -258,21 +244,17 @@ async function startBot() {
 
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
-
         if (qr) {
             console.log('📱 QR generado');
             qrCodeData = await QRCode.toDataURL(qr);
             isConnected = false;
         }
-
         if (connection === 'close') {
             isConnected = false;
             qrCodeData = '';
             const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log('❌ Desconectado. Reconectando:', shouldReconnect);
             if (shouldReconnect) setTimeout(startBot, 3000);
         }
-
         if (connection === 'open') {
             isConnected = true;
             qrCodeData = '';
@@ -282,20 +264,17 @@ async function startBot() {
 
     sock.ev.on('messages.upsert', async ({ messages, type }) => {
         if (type !== 'notify') return;
-
         for (const message of messages) {
             try {
                 if (message.key.fromMe) continue;
                 if (message.key.remoteJid?.endsWith('@g.us')) continue;
-
                 const userId = message.key.remoteJid;
                 const messageText = (
                     message.message?.conversation ||
                     message.message?.extendedTextMessage?.text || ''
                 ).trim();
-
                 if (!messageText) continue;
-                console.log(`📩 ${userId}: "${messageText}"`);
+                console.log('📩 ' + userId + ': "' + messageText + '"');
 
                 if (processingUsers.has(userId)) {
                     const elapsed = Date.now() - processingUsers.get(userId);
@@ -339,9 +318,7 @@ async function startBot() {
                         estado.conversacionLibre = true;
                         estado.paso = 'libre';
                         estado.esEspanol = true;
-                        await sendText(userId,
-                            '👩🏻‍💼 Parece que necesitas ayuda personalizada.\n\nEn unos momentos uno de nuestros asesores se pondrá en contacto contigo. 🙏\n\nSerá un placer atenderte. ✨'
-                        );
+                        await sendText(userId, '👩🏻‍💼 Parece que necesitas ayuda personalizada.\n\nEn unos momentos uno de nuestros asesores se pondrá en contacto contigo. 🙏\n\nSerá un placer atenderte. ✨');
                         processingUsers.delete(userId);
                     } else {
                         processingUsers.set(userId, Date.now());
@@ -404,12 +381,10 @@ async function startBot() {
 
                 if (estado.secuenciaCompleta) {
                     estado.respondioPostSecuencia = true;
-                    console.log(`✅ ${userId} respondió — seguimientos cancelados`);
                     continue;
                 }
 
                 if (estado.conversacionLibre || estado.paso === 'libre') {
-                    console.log(`💬 ${userId} conversación libre`);
                     continue;
                 }
 
@@ -422,34 +397,22 @@ async function startBot() {
 
 app.get('/', async (req, res) => {
     if (isConnected) {
-        res.send(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bot Oficial Conectado</title>
-        <style>body{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}.c{background:white;padding:3rem;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}h1{color:#667eea}.s{background:#d4edda;color:#155724;padding:1rem;border-radius:10px;margin:1rem 0}</style>
-        </head><body><div class="c"><h1>✅ Bot Oficial Conectado</h1><div class="s"><h2>🎉 Funcionando correctamente</h2></div></div></body></html>`);
+        res.send('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bot Oficial</title><style>body{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}.c{background:white;padding:3rem;border-radius:20px;text-align:center}h1{color:#667eea}.s{background:#d4edda;color:#155724;padding:1rem;border-radius:10px}</style></head><body><div class="c"><h1>✅ Bot Oficial Conectado</h1><div class="s"><h2>🎉 Funcionando correctamente</h2></div></div></body></html>');
     } else if (qrCodeData) {
-        res.send(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="refresh" content="5"><title>Conectar WhatsApp</title>
-        <style>body{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:20px}.c{background:white;padding:2rem;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;max-width:600px}h1{color:#667eea}.q img{max-width:300px}.i{text-align:left;background:#f8f9fa;padding:20px;border-radius:10px;margin:20px 0}ol{margin-left:20px}li{margin:10px 0}</style>
-        </head><body><div class="c"><h1>📱 Conectar WhatsApp</h1><div class="q"><img src="${qrCodeData}" alt="QR"></div>
-        <div class="i"><ol><li>Abre WhatsApp en tu celular</li><li>Ve a Configuración ⚙️</li><li>Toca "Dispositivos Vinculados"</li><li>Escanea el QR</li></ol></div>
-        <p>🔄 Se actualiza cada 5 segundos</p></div></body></html>`);
+        res.send('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="refresh" content="5"><title>Conectar</title><style>body{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}.c{background:white;padding:2rem;border-radius:20px;text-align:center;max-width:500px}h1{color:#667eea}img{max-width:280px}</style></head><body><div class="c"><h1>📱 Conectar WhatsApp</h1><img src="' + qrCodeData + '" alt="QR"><p>Se actualiza cada 5 segundos</p></div></body></html>');
     } else {
-        res.send(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="refresh" content="3"><title>Iniciando...</title>
-        <style>body{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}.c{background:white;padding:3rem;border-radius:20px;text-align:center}.l{border:8px solid #f3f3f3;border-top:8px solid #667eea;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite;margin:0 auto 20px}@keyframes spin{100%{transform:rotate(360deg)}}h1{color:#667eea}</style>
-        </head><body><div class="c"><div class="l"></div><h1>⏳ Iniciando Bot...</h1></div></body></html>`);
+        res.send('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="refresh" content="3"><title>Iniciando</title><style>body{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}.c{background:white;padding:3rem;border-radius:20px;text-align:center}.l{border:6px solid #f3f3f3;border-top:6px solid #667eea;border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;margin:0 auto 20px}@keyframes spin{100%{transform:rotate(360deg)}}h1{color:#667eea}</style></head><body><div class="c"><div class="l"></div><h1>⏳ Iniciando...</h1></div></body></html>');
     }
 });
 
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', connected: isConnected, timestamp: new Date().toISOString() });
+    res.json({ status: 'ok', connected: isConnected });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n🤖 INVITARTS BOT OFICIAL v3.0 (Baileys)`);
-    console.log(`🌐 Puerto: ${PORT}`);
-    console.log('🚀 Iniciando...\n');
+    console.log('\n🤖 INVITARTS BOT OFICIAL v3.1 (Baileys)');
+    console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
 
-process.on('SIGTERM', async () => {
-    console.log('⏹️ Cerrando...');
-    process.exit(0);
-});
+process.on('SIGTERM', () => process.exit(0));
