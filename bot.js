@@ -31,57 +31,40 @@ async function sendText(jid, text) {
 async function sendImage(jid, url, caption) {
     if (!sock) return;
     try {
-        const response = await fetch(url);
-        const buffer = Buffer.from(await response.arrayBuffer());
-        await sock.sendMessage(jid, { image: buffer, caption });
+        await sock.sendMessage(jid, { image: { url }, caption });
     } catch {
         await sendText(jid, caption);
     }
 }
 
-
-
-
-
-
-
-}
-
-async function enviarSelectorIdioma(userId) {
+async function enviarBienvenida(userId) {
     try {
-        await sendText(userId,
-            '👋 ¡Hola! / Hi!\n\n' +
-            'Por favor, selecciona tu idioma / Please select your language:\n\n' +
-            '🇪🇸 *1* — Español\n' +
-            '🇺🇸 *2* — English\n\n' +
-            '✍️ Escribe solo el número *1* o *2* para continuar.\n' +
-            '✍️ Type only the number *1* or *2* to continue.'
+        await sendImage(userId, FIREBASE_URLS.imagenLogo,
+            '🎉 ¡Hola! Bienvenido/a a nuestro servicio de invitaciones digitales.\n\n' +
+            '👇 Elige una de las siguientes opciones *escribiendo el número* correspondiente:\n\n' +
+            '1️⃣ Explícame sobre las invitaciones digitales\n' +
+            '2️⃣ Hablar con un asesor\n' +
+            '3️⃣ Switch to English 🇺🇸\n\n' +
+            '✍️ Escribe solo el número *1*, *2* o *3* para continuar.'
         );
     } catch (err) {
-        console.error('❌ Error selector:', err.message);
+        console.error('❌ Error bienvenida:', err.message);
     } finally {
         processingUsers.delete(userId);
     }
 }
 
-async function enviarMenu(userId, esEspanol) {
+async function enviarMenuIngles(userId) {
     try {
         await sleep(1000);
-        try {
-            await sendImage(userId, FIREBASE_URLS.imagenLogo,
-                esEspanol
-                    ? '¿En qué te puedo ayudar hoy?\n\n1️⃣ Quiero conocer las invitaciones digitales\n2️⃣ Prefiero hablar con un asesor\n\n✍️ Escribe solo el número *1 o 2* para continuar.'
-                    : 'How can I help you today?\n\n1️⃣ I want to learn about digital invitations\n2️⃣ I prefer to speak with an advisor\n\n✍️ Type only the number *1 or 2* to continue.'
-            );
-        } catch {
-            await sendText(userId,
-                esEspanol
-                    ? '¿En qué te puedo ayudar hoy?\n\n1️⃣ Quiero conocer las invitaciones digitales\n2️⃣ Prefiero hablar con un asesor\n\n✍️ Escribe solo el número *1 o 2* para continuar.'
-                    : 'How can I help you today?\n\n1️⃣ I want to learn about digital invitations\n2️⃣ I prefer to speak with an advisor\n\n✍️ Type only the number *1 or 2* to continue.'
-            );
-        }
+        await sendImage(userId, FIREBASE_URLS.imagenLogo,
+            'How can I help you today?\n\n' +
+            '1️⃣ I want to learn about digital invitations\n' +
+            '2️⃣ I prefer to speak with an advisor\n\n' +
+            '✍️ Type only the number *1 or 2* to continue.'
+        );
     } catch (err) {
-        console.error('❌ Error menú:', err.message);
+        console.error('❌ Error menú inglés:', err.message);
     } finally {
         processingUsers.delete(userId);
     }
@@ -142,28 +125,50 @@ async function enviarSecuencia(userId, esEspanol) {
         await sendText(userId,
             esEspanol
                 ? '🎁 *Nuestros Paquetes*\n\n' +
-                  '*CLÁSICO — $100 USD*\nInvitación completa basada en plantilla con colores y animaciones personalizadas. Incluye música, Maps, cuenta regresiva, regalos, Google Calendar y más.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
-                  '*PREMIUM — $175 USD* ⭐ _(Más popular)_\nDiseño completamente personalizado, invitaciones ilimitadas, plataforma privada con dashboard, QR, exportar PDF, hospedaje, mesa y canción en tiempo real. Hasta 2 idiomas.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
-                  '*PRESTIGE — $575 USD* 👑 _(Máximo nivel)_\nPágina diseñada desde cero, invitaciones ilimitadas + hasta 4 idiomas, dominio propio opcional, secciones ilimitadas y animación de apertura a medida.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
-                  '💳 *Opciones de pago:*\n\n' +
-                  '1️⃣ *Pago parcial:* puede abonar $30 al inicio y cancelar el valor restante al momento de la entrega de sus invitaciones. Ejemplo: en el plan de $175, paga $30 al inicio y $145 al finalizar.\n\n' +
-                  '2️⃣ *Pago total:* si realiza el pago completo desde el inicio, obtiene un 15% de descuento 🎉 Ejemplo: en el plan de $175, pagaría únicamente $149.\n\n' +
-                  'Así puede elegir la opción que mejor se adapte a usted.'
+                  '*CLÁSICO — $100 USD*\n' +
+                  'Invitación completa basada en plantilla con colores y animaciones personalizadas. *Invitaciones bajo único pedido*, con nombre y número de pases personalizados, plataforma de administración vinculada a google forms, se incluye en las invitaciones: música, Maps, cuenta regresiva, regalos, Google Calendar y más.\n' +
+                  '👉 Ejemplo (BODA - Clásico) https://invitarts.com/daniela-santiago/\n\n' +
+                  '*PREMIUM — $175 USD* ⭐ _(Más popular)_\n' +
+                  'Diseño completamente personalizado con animaciones premium y secciones exclusivas. Formulario de confirmación privado/personalizable, *invitaciones ilimitadas* con nombre, mesas y pases por invitado. *Plataforma privada Premium* con dashboard completo: confirmaciones, asistentes y mensajes en tiempo real, exportación en PDF, QR opcional, hospedaje y música incluidos. Disponible en hasta *2 idiomas*.\n' +
+                  '👉 Ejemplo (BODA - Premium) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
+                  '*PRESTIGE — $575 USD* 👑 _(Máximo nivel)_\n' +
+                  'Página diseñada desde 0 exclusivamente para ti, con *acceso de por vida* e *invitaciones ilimitadas*. Incluye animaciones premium, apertura personalizada, nombre, mesas y número de pases por invitado. Disponible en hasta *4 idiomas*, con secciones, tipografía e íconos a medida. Todo gestionado desde una *Plataforma privada Premium* con sistema completo de administración, menú interactivo y botonería personalizada.\n' +
+                  '👉 Ejemplo (BODA - Prestige) https://invitarts.com/boda-de-cristopher-carolina/'
                 : '🎁 *Our Packages*\n\n' +
-                  '*CLASSIC — $100 USD*\nComplete template-based invitation with personalized colors and animations. Includes music, Maps, countdown, gifts, Google Calendar and more.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
-                  '*PREMIUM — $175 USD* ⭐ _(Most popular)_\nFully custom design, unlimited invitations, private platform with dashboard, QR, PDF export, hosting, seating chart and real-time song. Up to 2 languages.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
-                  '*PRESTIGE — $575 USD* 👑 _(Maximum level)_\nPage designed from scratch, unlimited invitations + up to 4 languages, optional custom domain, unlimited sections and custom opening animation.\n👉 https://invitarts.com/nuestra-plataforma/\n\n' +
-                  '💳 *Payment options:*\n\n' +
-                  '1️⃣ *Partial payment:* you can pay $30 upfront and the remaining balance upon delivery of your invitations. Example: for the $175 plan, pay $30 now and $145 at the end.\n\n' +
-                  '2️⃣ *Full payment:* if you pay in full from the start, you get a 15% discount 🎉 Example: for the $175 plan, you would pay only $149.\n\n' +
-                  'Choose the option that best suits you.'
+                  '*CLASSIC — $100 USD*\n' +
+                  'Complete template-based invitation with personalized colors and animations. *Invitations per single order*, with personalized name and number of passes, administration platform linked to google forms, included in invitations: music, Maps, countdown, gifts, Google Calendar and more.\n' +
+                  '👉 Example (WEDDING - Classic) https://invitarts.com/daniela-santiago/\n\n' +
+                  '*PREMIUM — $175 USD* ⭐ _(Most popular)_\n' +
+                  'Fully custom design with premium animations and exclusive sections. Private/customizable confirmation form, *unlimited invitations* with name, tables and passes per guest. *Premium private platform* with full dashboard: real-time confirmations, attendees and messages, PDF export, optional QR, hosting and music included. Available in up to *2 languages*.\n' +
+                  '👉 Example (WEDDING - Premium) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
+                  '*PRESTIGE — $575 USD* 👑 _(Maximum level)_\n' +
+                  'Page designed from scratch exclusively for you, with *lifetime access* and *unlimited invitations*. Includes premium animations, custom opening, name, tables and number of passes per guest. Available in up to *4 languages*, with custom sections, typography and icons. All managed from a *Premium private platform* with complete administration system, interactive menu and custom buttons.\n' +
+                  '👉 Example (WEDDING - Prestige) https://invitarts.com/boda-de-cristopher-carolina/'
         );
 
         await sleep(2000);
         await sendText(userId,
             esEspanol
-                ? 'Para comenzar con tu invitación, llena nuestro formulario:\n\n📝 ' + FORM + '\n\nUna vez que lo llenes, *avísanos por aquí* para revisarlo en el sistema. ✅\n\n¡Cualquier pregunta con gusto te ayudamos! 😊'
-                : 'To get started with your invitation, fill out our form:\n\n📝 ' + FORM + '\n\nOnce you fill it out, *let us know here* so we can check it in the system. ✅\n\nFeel free to ask any questions! 😊'
+                ? 'En cuanto a la forma de pago, usted elige la que más le convenga:\n\n' +
+                  '✅ *Opción 1 — En dos partes:*\n' +
+                  'Nos hace llegar $30,00 ahorita para arrancar, y el resto lo cancela tranquilamente cuando le entreguemos su trabajo listo. 🙌\n\n' +
+                  '✅ *Opción 2 — Pago completo con descuento:*\n' +
+                  'Si prefiere cancelar todo desde el inicio, con gusto le aplicamos un 15% de descuento sobre el valor total. ¡Una muy buena opción para ahorrar! 💰\n\n' +
+                  '*Para comenzar, llena el pequeño formulario justo debajo 👇*\n' +
+                  '📋 ¡Rápido y fácil, solo 2 minutos!\n' +
+                  'Una vez completado, el sistema te enviará automáticamente un correo con los datos bancarios.\n' +
+                  'Luego solo *compártenos el comprobante de pago* por aquí y ¡arrancamos! 🚀\n\n' +
+                  '📝 ' + FORM
+                : 'Regarding payment, you choose the option that works best for you:\n\n' +
+                  '✅ *Option 1 — In two parts:*\n' +
+                  'Send us $30.00 now to get started, and pay the rest when we deliver your finished work. 🙌\n\n' +
+                  '✅ *Option 2 — Full payment with discount:*\n' +
+                  'If you prefer to pay everything upfront, we will gladly apply a 15% discount on the total amount. A great way to save! 💰\n\n' +
+                  '*To get started, fill out the short form below 👇*\n' +
+                  '📋 Quick and easy, only 2 minutes!\n' +
+                  'Once completed, the system will automatically send you an email with the bank details.\n' +
+                  'Then just *share the payment receipt* with us here and we get started! 🚀\n\n' +
+                  '📝 ' + FORM
         );
 
         const estado = userStates.get(userId);
@@ -175,9 +180,10 @@ async function enviarSecuencia(userId, esEspanol) {
         }
         console.log('✅ Secuencia completa: ' + userId);
 
+        // Seguimiento 1 — 7 minutos
         setTimeout(async () => {
             const e = userStates.get(userId);
-            if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && !e.seguimiento1Enviado) {
+            if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && !e.seguimiento1Enviado && !e.duenoAtendio) {
                 try {
                     await sendText(userId,
                         esEspanol
@@ -189,31 +195,36 @@ async function enviarSecuencia(userId, esEspanol) {
             }
         }, 7 * 60 * 1000);
 
+        // Seguimiento 2 — 24 horas
         setTimeout(async () => {
             const e = userStates.get(userId);
-            if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && e.seguimiento1Enviado && !e.seguimiento2Enviado) {
+            if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && !e.seguimiento2Enviado && !e.duenoAtendio) {
                 try {
                     await sendText(userId,
                         esEspanol
-                            ? '💌 *¿Sabías todo lo que incluye tu invitación digital?*\n\n' +
-                              '🪑 *Asignación de mesa* — Cada invitado sabe exactamente dónde sentarse\n' +
-                              '📲 *Código QR por invitado* — Valida la asistencia en la puerta\n' +
-                              '🌍 *Plataforma multiidioma* — Tus invitados la ven en su propio idioma\n' +
-                              '📊 *Panel en tiempo real* — Sabes quién confirmó y quién no\n' +
-                              '📸 *Álbum compartido* — Tus invitados suben fotos desde la invitación\n\n' +
-                              'Todo desde *$100 USD*. 🎯\n\n¿Listo para empezar?\n📝 ' + FORM
-                            : '💌 *Did you know everything your digital invitation includes?*\n\n' +
-                              '🪑 *Table assignment* — Each guest knows exactly where to sit\n' +
-                              '📲 *QR code per guest* — Validate attendance at the door\n' +
-                              '🌍 *Multilingual platform* — Guests view it in their own language\n' +
-                              '📊 *Real-time dashboard* — Know who confirmed and who has not\n' +
-                              '📸 *Shared album* — Guests upload photos from the invitation\n\n' +
-                              'All from *$100 USD*. 🎯\n\nReady to get started?\n📝 ' + FORM
+                            ? '💌 Hola de nuevo, soy *Cisne* de *Invitarts*. 👋\n\n' +
+                              'Quería contarte un poco más sobre todo lo que incluye tu invitación digital, porque va mucho más allá del diseño:\n\n' +
+                              '🪑 *Asignación de mesa* — Cada invitado sabe exactamente dónde sentarse, sin confusiones el día del evento\n' +
+                              '📲 *Código QR personalizado* _(opcional)_ — Valida y confirma la asistencia en la puerta de forma rápida y elegante\n' +
+                              '🌍 *Plataforma multiidioma* — Tus invitados pueden verla en su propio idioma, sin importar de dónde vengan\n' +
+                              '📊 *Panel en tiempo real* — Sabes en todo momento quién confirmó, quién no y cuántos asistirán\n' +
+                              '📸 *Álbum compartido* — Tus invitados suben sus fotos directamente desde la invitación\n\n' +
+                              'Todo esto en una sola plataforma, desde *$100 USD* — o menos si realizas el pago completo al inicio del proyecto y aprovechas el *15% de descuento* 🎉\n\n' +
+                              '¿Te animas a empezar? Llena el formulario y te contactamos enseguida:\n📝 ' + FORM + ' 😊'
+                            : '💌 Hello again, I am *Cisne* from *Invitarts*. 👋\n\n' +
+                              'I wanted to tell you a little more about everything your digital invitation includes, because it goes far beyond the design:\n\n' +
+                              '🪑 *Table assignment* — Each guest knows exactly where to sit, no confusion on the day of the event\n' +
+                              '📲 *Custom QR code* _(optional)_ — Validate and confirm attendance at the door quickly and elegantly\n' +
+                              '🌍 *Multilingual platform* — Your guests can view it in their own language, no matter where they come from\n' +
+                              '📊 *Real-time dashboard* — Know at all times who confirmed, who has not and how many will attend\n' +
+                              '📸 *Shared album* — Your guests upload their photos directly from the invitation\n\n' +
+                              'All of this in one platform, from *$100 USD* — or less if you pay in full at the start and take advantage of the *15% discount* 🎉\n\n' +
+                              'Ready to get started? Fill out the form and we will contact you right away:\n📝 ' + FORM + ' 😊'
                     );
                     e.seguimiento2Enviado = true;
                 } catch { console.log('⚠️ Error seguimiento 2'); }
             }
-        }, 14 * 60 * 1000);
+        }, 24 * 60 * 60 * 1000);
 
     } catch (err) {
         console.error('❌ Error secuencia:', err.message);
@@ -276,9 +287,20 @@ async function startBot() {
         if (type !== 'notify') return;
         for (const message of messages) {
             try {
-                if (message.key.fromMe) continue;
                 if (message.key.remoteJid?.endsWith('@g.us')) continue;
+
                 const userId = message.key.remoteJid;
+
+                // Si el dueño escribe manualmente, cancelar seguimientos
+                if (message.key.fromMe) {
+                    const e = userStates.get(userId);
+                    if (e) {
+                        e.duenoAtendio = true;
+                        console.log('👤 Dueño atendió a: ' + userId + ' — seguimientos cancelados');
+                    }
+                    continue;
+                }
+
                 const messageText = (
                     message.message?.conversation ||
                     message.message?.extendedTextMessage?.text || ''
@@ -297,43 +319,52 @@ async function startBot() {
                 if (!estado) {
                     processingUsers.set(userId, Date.now());
                     userStates.set(userId, {
-                        paso: 'eligiendo_idioma',
-                        intentoIdioma: 1,
+                        paso: 'bienvenida',
                         esEspanol: null,
                         secuenciaCompleta: false,
                         respondioPostSecuencia: false,
                         seguimiento1Enviado: false,
                         seguimiento2Enviado: false,
+                        duenoAtendio: false,
                         intentoMenu: 0,
                         conversacionLibre: false
                     });
-                    enviarSelectorIdioma(userId).catch(err => {
+                    enviarBienvenida(userId).catch(err => {
                         console.error(err.message);
                         processingUsers.delete(userId);
                     });
                     continue;
                 }
 
-                if (estado.paso === 'eligiendo_idioma') {
-                    if (messageText === '1' || messageText === '2') {
+                if (estado.paso === 'bienvenida') {
+                    if (messageText === '1') {
                         processingUsers.set(userId, Date.now());
-                        estado.esEspanol = messageText === '1';
-                        estado.paso = 'en_menu';
-                        enviarMenu(userId, estado.esEspanol).catch(err => {
+                        estado.esEspanol = true;
+                        estado.paso = 'en_secuencia';
+                        enviarSecuencia(userId, true).catch(err => {
                             console.error(err.message);
                             processingUsers.delete(userId);
                         });
-                    } else if (estado.intentoIdioma >= 2) {
+                    } else if (messageText === '2') {
                         processingUsers.set(userId, Date.now());
+                        estado.esEspanol = true;
                         estado.conversacionLibre = true;
                         estado.paso = 'libre';
-                        estado.esEspanol = true;
-                        await sendText(userId, '👩🏻‍💼 Parece que necesitas ayuda personalizada.\n\nEn unos momentos uno de nuestros asesores se pondrá en contacto contigo. 🙏\n\nSerá un placer atenderte. ✨');
-                        processingUsers.delete(userId);
+                        enviarMensajeAsesor(userId, true).catch(err => {
+                            console.error(err.message);
+                            processingUsers.delete(userId);
+                        });
+                    } else if (messageText === '3') {
+                        processingUsers.set(userId, Date.now());
+                        estado.esEspanol = false;
+                        estado.paso = 'menu_ingles';
+                        enviarMenuIngles(userId).catch(err => {
+                            console.error(err.message);
+                            processingUsers.delete(userId);
+                        });
                     } else {
                         processingUsers.set(userId, Date.now());
-                        estado.intentoIdioma = (estado.intentoIdioma || 1) + 1;
-                        enviarSelectorIdioma(userId).catch(err => {
+                        enviarBienvenida(userId).catch(err => {
                             console.error(err.message);
                             processingUsers.delete(userId);
                         });
@@ -341,50 +372,28 @@ async function startBot() {
                     continue;
                 }
 
-                const esEspanol = estado.esEspanol;
-
-                if (estado.paso === 'en_menu') {
+                if (estado.paso === 'menu_ingles') {
                     if (messageText === '1') {
                         processingUsers.set(userId, Date.now());
                         estado.paso = 'en_secuencia';
-                        enviarSecuencia(userId, esEspanol).catch(err => {
+                        enviarSecuencia(userId, false).catch(err => {
                             console.error(err.message);
                             processingUsers.delete(userId);
                         });
-                        continue;
-                    }
-                    if (messageText === '2') {
+                    } else if (messageText === '2') {
                         processingUsers.set(userId, Date.now());
                         estado.conversacionLibre = true;
                         estado.paso = 'libre';
-                        enviarMensajeAsesor(userId, esEspanol).catch(err => {
+                        enviarMensajeAsesor(userId, false).catch(err => {
                             console.error(err.message);
                             processingUsers.delete(userId);
                         });
-                        continue;
-                    }
-                    processingUsers.set(userId, Date.now());
-                    estado.intentoMenu = (estado.intentoMenu || 0) + 1;
-                    try {
-                        await sendText(userId,
-                            esEspanol
-                                ? 'Disculpa, no entendí tu mensaje 😊\n\nPor favor escribe *1* o *2* para continuar.'
-                                : 'Sorry, I did not understand your message 😊\n\nPlease type *1* or *2* to continue.'
-                        );
-                        if (estado.intentoMenu >= 2) {
-                            estado.conversacionLibre = true;
-                            estado.paso = 'libre';
-                            await sleep(500);
-                            await sendText(userId,
-                                esEspanol
-                                    ? 'Parece que necesitas ayuda personalizada 😊\nTe conecto con un asesor ahora mismo 👩‍💻'
-                                    : 'It seems you need personalized help 😊\nLet me connect you with an advisor right now 👩‍💻'
-                            );
-                        }
-                    } catch (err) {
-                        console.error(err.message);
-                    } finally {
-                        processingUsers.delete(userId);
+                    } else {
+                        processingUsers.set(userId, Date.now());
+                        enviarMenuIngles(userId).catch(err => {
+                            console.error(err.message);
+                            processingUsers.delete(userId);
+                        });
                     }
                     continue;
                 }
@@ -420,7 +429,7 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTS BOT OFICIAL v3.1 (Baileys)');
+    console.log('\n🤖 INVITARTS BOT OFICIAL v4.0 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
