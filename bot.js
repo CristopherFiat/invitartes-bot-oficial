@@ -118,8 +118,8 @@ async function enviarSecuencia(userId, esEspanol) {
         await sendImage(userId,
             esEspanol ? FIREBASE_URLS.imagenEspanol : FIREBASE_URLS.imagenIngles,
             esEspanol
-                ? '🔗 Conoce cómo funciona nuestra plataforma y las características detalladas de cada paquete:\n\n👉 https://invitarts.com/nuestra-plataforma/'
-                : '🔗 Learn how our platform works and see the detailed features of each package:\n\n👉 https://invitarts.com/nuestra-plataforma/'
+                ? '🔗 Conoce cómo funciona nuestra plataforma y las características detalladas de cada paquete:\n👉 (🎬 *Click para ver video de la plataforma*)  https://invitarts.com/nuestra-plataforma/'
+                : '🔗 Learn how our platform works and see the detailed features of each package:\n👉 (🎬 *Click to watch platform video*)  https://invitarts.com/nuestra-plataforma/'
         );
 
         await sleep(2000);
@@ -431,7 +431,7 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTS BOT OFICIAL v4.1 (Baileys)');
+    console.log('\n🤖 INVITARTS BOT OFICIAL v4.2 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
