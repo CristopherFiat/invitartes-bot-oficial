@@ -10,12 +10,13 @@ let qrCodeData = '';
 let isConnected = false;
 let sock = null;
 
+const BASE = 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/';
 const FIREBASE_URLS = {
-    imagenSobres:  'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/SOBRES%20(2).webp?alt=media&token=039116bd-eb91-49f8-bb11-17adcbe45c4e',
-    imagenQuinces: 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/QUINCES2.webp?alt=media&token=b4218fd0-3f2b-4a9a-bed0-047c70ad265c',
-    imagenEspanol: 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/espaniolo.webp?alt=media&token=b3436894-5140-40e4-82a4-d9945e1c4999',
-    imagenIngles:  'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/ingles.webp?alt=media&token=bcd82e49-0fb7-4c25-8d03-5e83c484a048',
-    imagenLogo:    'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/logoinvitarts2.png?alt=media&token=58be72ff-90e4-4d8c-9dbc-0dfda66c4877'
+    imagenLogo:    BASE + 'logits.webp?alt=media&token=36b8f135-f417-43f9-b400-51f6b64a7924',
+    imagenSobres:  BASE + 'jym.webp?alt=media&token=9ad8c6a6-06f3-4dfd-8add-92d223b7a726',
+    imagenQuinces: BASE + 'quin.webp?alt=media&token=9b4ffb8b-607c-48c1-9759-9ffded1687dc',
+    imagenEspanol: BASE + 'dash.webp?alt=media&token=d52a6492-f8e3-4466-9686-90ed2aa58b85',
+    imagenIngles:  BASE + 'inglish_11zon_11zon_11zon.webp?alt=media&token=a26791c9-d4a0-4d48-9e9b-6eff1e4c9824'
 };
 
 const userStates      = new Map();
@@ -153,18 +154,23 @@ async function enviarSecuencia(userId, esEspanol) {
                   '✅ *Opción 1 — En dos partes:*\n' +
                   'Nos hace llegar $30,00 ahorita para arrancar, y el resto lo cancela tranquilamente cuando le entreguemos su trabajo listo. 🙌\n\n' +
                   '✅ *Opción 2 — Pago completo con descuento:*\n' +
-                  'Si prefiere cancelar todo desde el inicio, con gusto le aplicamos un 15% de descuento sobre el valor total. ¡Una muy buena opción para ahorrar! 💰\n\n' +
-                  '*Para comenzar, llena el pequeño formulario justo debajo 👇*\n' +
-                  '📋 ¡Rápido y fácil, solo 2 minutos!\n' +
-                  'Una vez completado, el sistema te enviará automáticamente un correo con los datos bancarios.\n' +
-                  'Luego solo *compártenos el comprobante de pago* por aquí y ¡arrancamos! 🚀\n\n' +
-                  '📝 ' + FORM
+                  'Si prefiere cancelar todo desde el inicio, con gusto le aplicamos un 15% de descuento sobre el valor total. ¡Una muy buena opción para ahorrar! 💰'
                 : 'Regarding payment, you choose the option that works best for you:\n\n' +
                   '✅ *Option 1 — In two parts:*\n' +
                   'Send us $30.00 now to get started, and pay the rest when we deliver your finished work. 🙌\n\n' +
                   '✅ *Option 2 — Full payment with discount:*\n' +
-                  'If you prefer to pay everything upfront, we will gladly apply a 15% discount on the total amount. A great way to save! 💰\n\n' +
-                  '*To get started, fill out the short form below 👇*\n' +
+                  'If you prefer to pay everything upfront, we will gladly apply a 15% discount on the total amount. A great way to save! 💰'
+        );
+
+        await sleep(2000);
+        await sendText(userId,
+            esEspanol
+                ? '*Para comenzar, llena el pequeño formulario justo debajo 👇*\n' +
+                  '📋 ¡Rápido y fácil, solo 2 minutos!\n' +
+                  'Una vez completado, el sistema te enviará automáticamente un correo con los datos bancarios.\n' +
+                  'Luego solo *compártenos el comprobante de pago* por aquí y ¡arrancamos! 🚀\n\n' +
+                  '📝 ' + FORM
+                : '*To get started, fill out the short form below 👇*\n' +
                   '📋 Quick and easy, only 2 minutes!\n' +
                   'Once completed, the system will automatically send you an email with the bank details.\n' +
                   'Then just *share the payment receipt* with us here and we get started! 🚀\n\n' +
@@ -180,7 +186,6 @@ async function enviarSecuencia(userId, esEspanol) {
         }
         console.log('✅ Secuencia completa: ' + userId);
 
-        // Seguimiento 1 — 7 minutos
         setTimeout(async () => {
             const e = userStates.get(userId);
             if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && !e.seguimiento1Enviado && !e.duenoAtendio) {
@@ -195,7 +200,6 @@ async function enviarSecuencia(userId, esEspanol) {
             }
         }, 7 * 60 * 1000);
 
-        // Seguimiento 2 — 24 horas
         setTimeout(async () => {
             const e = userStates.get(userId);
             if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && !e.seguimiento2Enviado && !e.duenoAtendio) {
@@ -288,10 +292,8 @@ async function startBot() {
         for (const message of messages) {
             try {
                 if (message.key.remoteJid?.endsWith('@g.us')) continue;
-
                 const userId = message.key.remoteJid;
 
-                // Si el dueño escribe manualmente, cancelar seguimientos
                 if (message.key.fromMe) {
                     const e = userStates.get(userId);
                     if (e) {
@@ -429,7 +431,7 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTS BOT OFICIAL v4.0 (Baileys)');
+    console.log('\n🤖 INVITARTS BOT OFICIAL v4.1 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
