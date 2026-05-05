@@ -125,25 +125,25 @@ async function enviarSecuencia(userId, esEspanol) {
         await sleep(2000);
         await sendText(userId,
             esEspanol
-                ? '🎁 *Nuestros Paquetes*\n\n' +
-                  '*CLÁSICO — $100 USD*\n' +
-                  'Invitación completa basada en plantilla con colores y animaciones personalizadas. *Invitaciones bajo único pedido*, con nombre y número de pases personalizados, plataforma de administración vinculada a google forms, se incluye en las invitaciones: música, Maps, cuenta regresiva, regalos, Google Calendar y más.\n' +
+                ? '🎁 *NUESTROS PAQUETES*\nOfrecemos únicamente soluciones de excelencia.\n\n' +
+                  '*CLÁSICO — $100 USD* _($85 con descuento)_\n' +
+                  'Invitación completa basada en plantilla con colores personalizados, tipografía, iconografía y animaciones estándar, no incluye fotografías (se cotizan por separado) + Invitaciones ilimitadas + nombre y número de pases personalizados + *Plataforma Privada Premium INVITARTS* con dashboard completo: confirmaciones, asistentes y mensajes en tiempo real, exportación en PDF y más.\n' +
                   '👉 Ejemplo (BODA - Clásico) https://invitarts.com/daniela-santiago/\n\n' +
-                  '*PREMIUM — $175 USD* ⭐ _(Más popular)_\n' +
-                  'Diseño completamente personalizado con animaciones premium y secciones exclusivas. Formulario de confirmación privado/personalizable, *invitaciones ilimitadas* con nombre, mesas y pases por invitado. *Plataforma privada Premium* con dashboard completo: confirmaciones, asistentes y mensajes en tiempo real, exportación en PDF, QR opcional, hospedaje y música incluidos. Disponible en hasta *2 idiomas*.\n' +
+                  '*PREMIUM — $175 USD* _($148 con descuento)_ ⭐ _(Más popular)_\n' +
+                  'Diseño completamente personalizado con animaciones premium y secciones exclusivas. *Hasta 10 fotos incluidas* + *QR de asistencia (opcional): confirma el ingreso escaneando la invitación* + tipografía e iconografía personalizable + Formulario de confirmación privado/personalizable + invitaciones ilimitadas con nombre, número de *mesas* y pases por invitado. *Plataforma Privada Premium INVITARTS* con dashboard completo: confirmaciones, asistentes y mensajes en tiempo real, exportación en PDF, Escáner QR opcional, hospedaje y música incluidos. Disponible en hasta 2 idiomas.\n' +
                   '👉 Ejemplo (BODA - Premium) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
-                  '*PRESTIGE — $575 USD* 👑 _(Máximo nivel)_\n' +
-                  'Página diseñada desde 0 exclusivamente para ti, con *acceso de por vida* e *invitaciones ilimitadas*. Incluye animaciones premium, apertura personalizada, nombre, mesas y número de pases por invitado. Disponible en hasta *4 idiomas*, con secciones, tipografía e íconos a medida. Todo gestionado desde una *Plataforma privada Premium* con sistema completo de administración, menú interactivo y botonería personalizada.\n' +
+                  '*PRESTIGE — $375 USD* _($318 con descuento)_ 👑 _(Máximo nivel)_\n' +
+                  'Página diseñada desde 0 exclusivamente para ti, con *acceso de por vida e invitaciones ilimitadas*. Incluye animaciones premium, apertura personalizada, nombre, mesas y número de pases por invitado. Disponible en hasta 4 idiomas, con secciones, tipografía e íconos a medida. Todo gestionado desde una *Plataforma Privada Premium INVITARTS* con sistema completo de administración, menú interactivo y botonería personalizada.\n' +
                   '👉 Ejemplo (BODA - Prestige) https://invitarts.com/boda-de-cristopher-carolina/'
-                : '🎁 *Our Packages*\n\n' +
-                  '*CLASSIC — $100 USD*\n' +
-                  'Complete template-based invitation with personalized colors and animations. *Invitations per single order*, with personalized name and number of passes, administration platform linked to google forms, included in invitations: music, Maps, countdown, gifts, Google Calendar and more.\n' +
+                : '🎁 *OUR PACKAGES*\nWe offer only excellence.\n\n' +
+                  '*CLASSIC — $100 USD* _($85 with discount)_\n' +
+                  'Complete template-based invitation with personalized colors, typography, iconography and standard animations, photos not included (quoted separately) + Unlimited invitations + personalized name and number of passes + *INVITARTS Premium Private Platform* with full dashboard: real-time confirmations, attendees and messages, PDF export and more.\n' +
                   '👉 Example (WEDDING - Classic) https://invitarts.com/daniela-santiago/\n\n' +
-                  '*PREMIUM — $175 USD* ⭐ _(Most popular)_\n' +
-                  'Fully custom design with premium animations and exclusive sections. Private/customizable confirmation form, *unlimited invitations* with name, tables and passes per guest. *Premium private platform* with full dashboard: real-time confirmations, attendees and messages, PDF export, optional QR, hosting and music included. Available in up to *2 languages*.\n' +
+                  '*PREMIUM — $175 USD* _($148 with discount)_ ⭐ _(Most popular)_\n' +
+                  'Fully custom design with premium animations and exclusive sections. *Up to 10 photos included* + *Attendance QR (optional): confirms entry by scanning the invitation* + customizable typography and iconography + private/customizable confirmation form + unlimited invitations with name, *table* number and passes per guest. *INVITARTS Premium Private Platform* with full dashboard: real-time confirmations, attendees and messages, PDF export, optional QR scanner, hosting and music included. Available in up to 2 languages.\n' +
                   '👉 Example (WEDDING - Premium) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
-                  '*PRESTIGE — $575 USD* 👑 _(Maximum level)_\n' +
-                  'Page designed from scratch exclusively for you, with *lifetime access* and *unlimited invitations*. Includes premium animations, custom opening, name, tables and number of passes per guest. Available in up to *4 languages*, with custom sections, typography and icons. All managed from a *Premium private platform* with complete administration system, interactive menu and custom buttons.\n' +
+                  '*PRESTIGE — $375 USD* _($318 with discount)_ 👑 _(Maximum level)_\n' +
+                  'Page designed from scratch exclusively for you, with *lifetime access and unlimited invitations*. Includes premium animations, custom opening, name, tables and number of passes per guest. Available in up to 4 languages, with custom sections, typography and icons. All managed from an *INVITARTS Premium Private Platform* with complete administration system, interactive menu and custom buttons.\n' +
                   '👉 Example (WEDDING - Prestige) https://invitarts.com/boda-de-cristopher-carolina/'
         );
 
@@ -151,15 +151,11 @@ async function enviarSecuencia(userId, esEspanol) {
         await sendText(userId,
             esEspanol
                 ? 'En cuanto a la forma de pago, usted elige la que más le convenga:\n\n' +
-                  '✅ *Opción 1 — En dos partes:*\n' +
-                  'Nos hace llegar $30,00 ahorita para arrancar, y el resto lo cancela tranquilamente cuando le entreguemos su trabajo listo. 🙌\n\n' +
-                  '✅ *Opción 2 — Pago completo con descuento:*\n' +
-                  'Si prefiere cancelar todo desde el inicio, con gusto le aplicamos un 15% de descuento sobre el valor total. ¡Una muy buena opción para ahorrar! 💰'
+                  '✅ *Opción 1* — Reserva con $15 y cancela el saldo restante al momento de la entrega de sus invitaciones. 🙌\n' +
+                  '✅ *Opción 2* — 50% al inicio y 50% al finalizar _(aplica descuento)_. 💰'
                 : 'Regarding payment, you choose the option that works best for you:\n\n' +
-                  '✅ *Option 1 — In two parts:*\n' +
-                  'Send us $30.00 now to get started, and pay the rest when we deliver your finished work. 🙌\n\n' +
-                  '✅ *Option 2 — Full payment with discount:*\n' +
-                  'If you prefer to pay everything upfront, we will gladly apply a 15% discount on the total amount. A great way to save! 💰'
+                  '✅ *Option 1* — Reserve with $15 and pay the remaining balance upon delivery of your invitations. 🙌\n' +
+                  '✅ *Option 2* — 50% upfront and 50% upon completion _(discount applies)_. 💰'
         );
 
         await sleep(2000);
@@ -213,7 +209,7 @@ async function enviarSecuencia(userId, esEspanol) {
                               '🌍 *Plataforma multiidioma* — Tus invitados pueden verla en su propio idioma, sin importar de dónde vengan\n' +
                               '📊 *Panel en tiempo real* — Sabes en todo momento quién confirmó, quién no y cuántos asistirán\n' +
                               '📸 *Álbum compartido* — Tus invitados suben sus fotos directamente desde la invitación\n\n' +
-                              'Todo esto en una sola plataforma, desde *$100 USD* — o menos si realizas el pago completo al inicio del proyecto y aprovechas el *15% de descuento* 🎉\n\n' +
+                              'Todo esto en una sola plataforma, desde *$100 USD* — o menos si realizas el pago al 50% al inicio y aprovechas el descuento 🎉\n\n' +
                               '¿Te animas a empezar? Llena el formulario y te contactamos enseguida:\n📝 ' + FORM + ' 😊'
                             : '💌 Hello again, I am *Cisne* from *Invitarts*. 👋\n\n' +
                               'I wanted to tell you a little more about everything your digital invitation includes, because it goes far beyond the design:\n\n' +
@@ -222,7 +218,7 @@ async function enviarSecuencia(userId, esEspanol) {
                               '🌍 *Multilingual platform* — Your guests can view it in their own language, no matter where they come from\n' +
                               '📊 *Real-time dashboard* — Know at all times who confirmed, who has not and how many will attend\n' +
                               '📸 *Shared album* — Your guests upload their photos directly from the invitation\n\n' +
-                              'All of this in one platform, from *$100 USD* — or less if you pay in full at the start and take advantage of the *15% discount* 🎉\n\n' +
+                              'All of this in one platform, from *$100 USD* — or less if you pay 50% upfront and take advantage of the discount 🎉\n\n' +
                               'Ready to get started? Fill out the form and we will contact you right away:\n📝 ' + FORM + ' 😊'
                     );
                     e.seguimiento2Enviado = true;
@@ -431,7 +427,7 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTS BOT OFICIAL v4.2 (Baileys)');
+    console.log('\n🤖 INVITARTS BOT OFICIAL v4.3 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
