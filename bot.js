@@ -40,6 +40,12 @@ async function sendImage(jid, url, caption) {
 
 async function enviarBienvenida(userId) {
     try {
+        // Verificar si el dueño ya atendió antes de enviar
+        const e = userStates.get(userId);
+        if (e && e.duenoAtendio) {
+            console.log('⛔ Bienvenida cancelada — dueño ya atendió a: ' + userId);
+            return;
+        }
         await sendImage(userId, FIREBASE_URLS.imagenLogo,
             '🎉 ¡Hola! Bienvenido/a a nuestro servicio de invitaciones digitales.\n\n' +
             '👇 Elige una de las siguientes opciones *escribiendo el número* correspondiente:\n\n' +
@@ -57,6 +63,8 @@ async function enviarBienvenida(userId) {
 
 async function enviarMenuIngles(userId) {
     try {
+        const e = userStates.get(userId);
+        if (e && e.duenoAtendio) return;
         await sleep(1000);
         await sendImage(userId, FIREBASE_URLS.imagenLogo,
             'How can I help you today?\n\n' +
@@ -73,9 +81,16 @@ async function enviarMenuIngles(userId) {
 
 async function enviarSecuencia(userId, esEspanol) {
     try {
+        const e = userStates.get(userId);
+        if (e && e.duenoAtendio) {
+            console.log('⛔ Secuencia cancelada — dueño ya atendió a: ' + userId);
+            return;
+        }
         console.log('📤 Secuencia: ' + userId + ' | ' + (esEspanol ? 'ES' : 'EN'));
 
         await sleep(1500);
+        const estado1 = userStates.get(userId);
+        if (estado1 && estado1.duenoAtendio) return;
         await sendText(userId,
             esEspanol
                 ? '¡Hola! 👋 Te saludamos de *Invitarts*, con gusto te contamos sobre nuestras invitaciones digitales ✨\n\n' +
@@ -101,6 +116,7 @@ async function enviarSecuencia(userId, esEspanol) {
         );
 
         await sleep(2000);
+        if (userStates.get(userId)?.duenoAtendio) return;
         await sendImage(userId, FIREBASE_URLS.imagenSobres,
             esEspanol
                 ? '*Ejemplo 1*\n💫 *El amor tiene fecha.*\n\nJosé & María están escribiendo el capítulo más bonito de su historia, y quieren que tú lo vivas con ellos.\n\nEntra a su invitación digital, confirma tu asistencia y prepárate para una celebración inolvidable. 🥂🤍\n\n👉 https://invitarts.com/boda-de-jose-maria/'
@@ -108,6 +124,7 @@ async function enviarSecuencia(userId, esEspanol) {
         );
 
         await sleep(2000);
+        if (userStates.get(userId)?.duenoAtendio) return;
         await sendImage(userId, FIREBASE_URLS.imagenQuinces,
             esEspanol
                 ? '*Ejemplo 2*\n👸🏻✨ *Una princesa está a punto de convertirse en reina...*\n\nMilenna cumple XV años y quiere celebrarlo rodeada de las personas que más quiere. ¿Estás listo para ser parte de esta noche inolvidable?\n\nEntra a su invitación digital, confirma tu asistencia y prepárate para una fiesta que se quedará en tu corazón. 🎉🌸\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
@@ -115,6 +132,7 @@ async function enviarSecuencia(userId, esEspanol) {
         );
 
         await sleep(2000);
+        if (userStates.get(userId)?.duenoAtendio) return;
         await sendImage(userId,
             esEspanol ? FIREBASE_URLS.imagenEspanol : FIREBASE_URLS.imagenIngles,
             esEspanol
@@ -123,42 +141,31 @@ async function enviarSecuencia(userId, esEspanol) {
         );
 
         await sleep(2000);
+        if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId,
             esEspanol
-                ? '🎁 *NUESTROS PAQUETES*\nOfrecemos únicamente soluciones de excelencia.\n\n' +
-                  '*CLÁSICO — $100 USD* _($85 con descuento)_\n' +
-                  'Invitación completa basada en plantilla con colores personalizados, tipografía, iconografía y animaciones estándar, no incluye fotografías (se cotizan por separado) + Invitaciones ilimitadas + nombre y número de pases personalizados + *Plataforma Privada Premium INVITARTS* con dashboard completo: confirmaciones, asistentes y mensajes en tiempo real, exportación en PDF y más.\n' +
-                  '👉 Ejemplo (BODA - Clásico) https://invitarts.com/daniela-santiago/\n\n' +
-                  '*PREMIUM — $175 USD* _($148 con descuento)_ ⭐ _(Más popular)_\n' +
-                  'Diseño completamente personalizado con animaciones premium y secciones exclusivas. *Hasta 10 fotos incluidas* + *QR de asistencia (opcional): confirma el ingreso escaneando la invitación* + tipografía e iconografía personalizable + Formulario de confirmación privado/personalizable + invitaciones ilimitadas con nombre, número de *mesas* y pases por invitado. *Plataforma Privada Premium INVITARTS* con dashboard completo: confirmaciones, asistentes y mensajes en tiempo real, exportación en PDF, Escáner QR opcional, hospedaje y música incluidos. Disponible en hasta 2 idiomas.\n' +
-                  '👉 Ejemplo (BODA - Premium) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
-                  '*PRESTIGE — $375 USD* _($318 con descuento)_ 👑 _(Máximo nivel)_\n' +
-                  'Página diseñada desde 0 exclusivamente para ti, con *acceso de por vida e invitaciones ilimitadas*. Incluye animaciones premium, apertura personalizada, nombre, mesas y número de pases por invitado. Disponible en hasta 4 idiomas, con secciones, tipografía e íconos a medida. Todo gestionado desde una *Plataforma Privada Premium INVITARTS* con sistema completo de administración, menú interactivo y botonería personalizada.\n' +
-                  '👉 Ejemplo (BODA - Prestige) https://invitarts.com/boda-de-cristopher-carolina/'
-                : '🎁 *OUR PACKAGES*\nWe offer only excellence.\n\n' +
-                  '*CLASSIC — $100 USD* _($85 with discount)_\n' +
-                  'Complete template-based invitation with personalized colors, typography, iconography and standard animations, photos not included (quoted separately) + Unlimited invitations + personalized name and number of passes + *INVITARTS Premium Private Platform* with full dashboard: real-time confirmations, attendees and messages, PDF export and more.\n' +
-                  '👉 Example (WEDDING - Classic) https://invitarts.com/daniela-santiago/\n\n' +
-                  '*PREMIUM — $175 USD* _($148 with discount)_ ⭐ _(Most popular)_\n' +
-                  'Fully custom design with premium animations and exclusive sections. *Up to 10 photos included* + *Attendance QR (optional): confirms entry by scanning the invitation* + customizable typography and iconography + private/customizable confirmation form + unlimited invitations with name, *table* number and passes per guest. *INVITARTS Premium Private Platform* with full dashboard: real-time confirmations, attendees and messages, PDF export, optional QR scanner, hosting and music included. Available in up to 2 languages.\n' +
-                  '👉 Example (WEDDING - Premium) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
-                  '*PRESTIGE — $375 USD* _($318 with discount)_ 👑 _(Maximum level)_\n' +
-                  'Page designed from scratch exclusively for you, with *lifetime access and unlimited invitations*. Includes premium animations, custom opening, name, tables and number of passes per guest. Available in up to 4 languages, with custom sections, typography and icons. All managed from an *INVITARTS Premium Private Platform* with complete administration system, interactive menu and custom buttons.\n' +
-                  '👉 Example (WEDDING - Prestige) https://invitarts.com/boda-de-cristopher-carolina/'
+                ? '🎁 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas 🎨\n\n' +
+                  '*CLÁSICO* — $100 USD _(€90)_\nInvitación digital con nombre y número de pase, 4 fotos, música de fondo y plataforma de envíos incluida.\n👉 (Ejemplo CLÁSICO) https://invitarts.com/daniela-santiago/\n\n' +
+                  '*CLÁSICO ROYALE* — $130 USD _(€115)_ ⭐ _Más popular_\nTodo lo del Clásico + hasta 10 fotos + invitaciones ilimitadas, sin límites ni sorpresas.\n👉 (Ejemplo CLÁSICO ROYALE) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
+                  '*PREMIUM* — $150 USD _(€135)_\nTodo lo del Clásico Royale + hasta 20 fotos + número de mesa + secciones completamente personalizadas para tu evento + QR de asistencia para confirmar el ingreso de cada invitado (opcional).\n👉 (Ejemplo PREMIUM) https://invitarts.com/boda-de-camila-martin-un-amor-para-siempre-copy/\n\n' +
+                  '*PRESTIGE* — $300 USD _(€265)_ 👑 _Máximo nivel_\nTodo lo del Premium + diseño exclusivo desde cero + fotos ilimitadas + reporte semanal de confirmados vía WhatsApp o correo + opcionales a tu medida: QR imprimible para mesas, envío de invitaciones, botonería personalizada y acceso de por vida.\n👉 (Ejemplo PRESTIGE) https://invitarts.com/boda-de-cristopher-carolina/'
+                : '🎁 *Our Packages*\nAll our invitations are completely personalized 🎨\n\n' +
+                  '*CLASSIC* — $100 USD _(€90)_\nDigital invitation with personalized name and pass number, 4 photos, background music and sending platform included.\n👉 (CLASSIC Example) https://invitarts.com/daniela-santiago/\n\n' +
+                  '*CLASSIC ROYALE* — $130 USD _(€115)_ ⭐ _Most popular_\nEverything in Classic + up to 10 photos + unlimited invitations, no limits or surprises.\n👉 (CLASSIC ROYALE Example) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
+                  '*PREMIUM* — $150 USD _(€135)_\nEverything in Classic Royale + up to 20 photos + table number + completely personalized sections for your event + attendance QR to confirm each guest\'s entry (optional).\n👉 (PREMIUM Example) https://invitarts.com/boda-de-camila-martin-un-amor-para-siempre-copy/\n\n' +
+                  '*PRESTIGE* — $300 USD _(€265)_ 👑 _Maximum level_\nEverything in Premium + exclusive design from scratch + unlimited photos + weekly confirmation report via WhatsApp or email + custom options: printable QR for tables, invitation sending, custom buttons and lifetime access.\n👉 (PRESTIGE Example) https://invitarts.com/boda-de-cristopher-carolina/'
         );
 
         await sleep(2000);
+        if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId,
             esEspanol
-                ? 'En cuanto a la forma de pago, usted elige la que más le convenga:\n\n' +
-                  '✅ *Opción 1* — Reserva con $15 y cancela el saldo restante al momento de la entrega de sus invitaciones. 🙌\n' +
-                  '✅ *Opción 2* — 50% al inicio y 50% al finalizar _(aplica descuento)_. 💰'
-                : 'Regarding payment, you choose the option that works best for you:\n\n' +
-                  '✅ *Option 1* — Reserve with $15 and pay the remaining balance upon delivery of your invitations. 🙌\n' +
-                  '✅ *Option 2* — 50% upfront and 50% upon completion _(discount applies)_. 💰'
+                ? '✅ Podemos empezar con un abono de $15 y cancela el saldo restante al momento de entregarle sus invitaciones. 🙌'
+                : '✅ We can start with a $15 deposit and you pay the remaining balance upon delivery of your invitations. 🙌'
         );
 
         await sleep(2000);
+        if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId,
             esEspanol
                 ? '*Para comenzar, llena el pequeño formulario justo debajo 👇*\n' +
@@ -235,6 +242,8 @@ async function enviarSecuencia(userId, esEspanol) {
 
 async function enviarMensajeAsesor(userId, esEspanol) {
     try {
+        const e = userStates.get(userId);
+        if (e && e.duenoAtendio) return;
         await sleep(1500);
         await sendText(userId,
             esEspanol
@@ -291,11 +300,23 @@ async function startBot() {
                 const userId = message.key.remoteJid;
 
                 if (message.key.fromMe) {
-                    const e = userStates.get(userId);
-                    if (e) {
+                    let e = userStates.get(userId);
+                    if (!e) {
+                        userStates.set(userId, {
+                            paso: 'bienvenida',
+                            esEspanol: null,
+                            secuenciaCompleta: false,
+                            respondioPostSecuencia: false,
+                            seguimiento1Enviado: false,
+                            seguimiento2Enviado: false,
+                            duenoAtendio: true,
+                            intentoMenu: 0,
+                            conversacionLibre: false
+                        });
+                    } else {
                         e.duenoAtendio = true;
-                        console.log('👤 Dueño atendió a: ' + userId + ' — seguimientos cancelados');
                     }
+                    console.log('👤 Dueño atendió a: ' + userId + ' — flujo completamente cancelado');
                     continue;
                 }
 
@@ -331,6 +352,11 @@ async function startBot() {
                         console.error(err.message);
                         processingUsers.delete(userId);
                     });
+                    continue;
+                }
+
+                if (estado.duenoAtendio) {
+                    console.log('⛔ ' + userId + ' — dueño ya atendió, ignorando mensaje');
                     continue;
                 }
 
@@ -427,7 +453,7 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTS BOT OFICIAL v4.3 (Baileys)');
+    console.log('\n🤖 INVITARTS BOT OFICIAL v4.4 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
