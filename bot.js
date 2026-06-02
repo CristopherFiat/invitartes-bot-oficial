@@ -23,6 +23,7 @@ const userStates      = new Map();
 const processingUsers = new Map();
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const FORM = 'https://invitarts.com/formulario/';
+const PAYPAL = 'https://www.paypal.com/paypalme/CristopherAlvarezG?locale.x=es_XC&country.x=EC';
 
 async function sendText(jid, text) {
     if (!sock) return;
@@ -40,12 +41,8 @@ async function sendImage(jid, url, caption) {
 
 async function enviarBienvenida(userId) {
     try {
-        // Verificar si el dueño ya atendió antes de enviar
         const e = userStates.get(userId);
-        if (e && e.duenoAtendio) {
-            console.log('⛔ Bienvenida cancelada — dueño ya atendió a: ' + userId);
-            return;
-        }
+        if (e && e.duenoAtendio) return;
         await sendImage(userId, FIREBASE_URLS.imagenLogo,
             '🎉 ¡Hola! Bienvenido/a a nuestro servicio de invitaciones digitales.\n\n' +
             '👇 Elige una de las siguientes opciones *escribiendo el número* correspondiente:\n\n' +
@@ -82,15 +79,11 @@ async function enviarMenuIngles(userId) {
 async function enviarSecuencia(userId, esEspanol) {
     try {
         const e = userStates.get(userId);
-        if (e && e.duenoAtendio) {
-            console.log('⛔ Secuencia cancelada — dueño ya atendió a: ' + userId);
-            return;
-        }
+        if (e && e.duenoAtendio) return;
         console.log('📤 Secuencia: ' + userId + ' | ' + (esEspanol ? 'ES' : 'EN'));
 
         await sleep(1500);
-        const estado1 = userStates.get(userId);
-        if (estado1 && estado1.duenoAtendio) return;
+        if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId,
             esEspanol
                 ? '¡Hola! 👋 Te saludamos de *Invitarts*, con gusto te contamos sobre nuestras invitaciones digitales ✨\n\n' +
@@ -145,23 +138,13 @@ async function enviarSecuencia(userId, esEspanol) {
         await sendText(userId,
             esEspanol
                 ? '🎁 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas 🎨\n\n' +
-                  '*CLÁSICO* — $100 USD _(€90)_\nInvitación digital con nombre y número de pase, 4 fotos, música de fondo y plataforma de envíos incluida.\n👉 (Ejemplo CLÁSICO) https://invitarts.com/daniela-santiago/\n\n' +
-                  '*CLÁSICO ROYALE* — $130 USD _(€115)_ ⭐ _Más popular_\nTodo lo del Clásico + hasta 10 fotos + invitaciones ilimitadas, sin límites ni sorpresas.\n👉 (Ejemplo CLÁSICO ROYALE) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
-                  '*PREMIUM* — $150 USD _(€135)_\nTodo lo del Clásico Royale + hasta 20 fotos + número de mesa + secciones completamente personalizadas para tu evento + QR de asistencia para confirmar el ingreso de cada invitado (opcional).\n👉 (Ejemplo PREMIUM) https://invitarts.com/boda-de-camila-martin-un-amor-para-siempre-copy/\n\n' +
-                  '*PRESTIGE* — $300 USD _(€265)_ 👑 _Máximo nivel_\nTodo lo del Premium + diseño exclusivo desde cero + fotos ilimitadas + reporte semanal de confirmados vía WhatsApp o correo + opcionales a tu medida: QR imprimible para mesas, envío de invitaciones, botonería personalizada y acceso de por vida.\n👉 (Ejemplo PRESTIGE) https://invitarts.com/boda-de-cristopher-carolina/'
+                  '*CLÁSICO* — €150\nBasado en plantilla, una sola invitación para todos, sin fotos, sencillo y bonito.\n👉 (Ejemplo CLÁSICO) https://invitarts.com/daniela-santiago/\n\n' +
+                  '*CLÁSICO ROYALE* — €175 ⭐ _Más popular_\nDiseño con nombre y número de pases personalizados + 4 fotos + música y plataforma de envíos.\n👉 (Ejemplo CLÁSICO ROYALE) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
+                  '*PREMIUM* — €250 👑\nTodo lo del Clásico Royale + invitaciones ilimitadas + hasta 20 fotos + íconos animados, animaciones premium, fecha máxima de confirmación y más.\n👉 (Ejemplo PREMIUM) https://invitarts.com/boda-de-camila-martin-un-amor-para-siempre-muestra/'
                 : '🎁 *Our Packages*\nAll our invitations are completely personalized 🎨\n\n' +
-                  '*CLASSIC* — $100 USD _(€90)_\nDigital invitation with personalized name and pass number, 4 photos, background music and sending platform included.\n👉 (CLASSIC Example) https://invitarts.com/daniela-santiago/\n\n' +
-                  '*CLASSIC ROYALE* — $130 USD _(€115)_ ⭐ _Most popular_\nEverything in Classic + up to 10 photos + unlimited invitations, no limits or surprises.\n👉 (CLASSIC ROYALE Example) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
-                  '*PREMIUM* — $150 USD _(€135)_\nEverything in Classic Royale + up to 20 photos + table number + completely personalized sections for your event + attendance QR to confirm each guest\'s entry (optional).\n👉 (PREMIUM Example) https://invitarts.com/boda-de-camila-martin-un-amor-para-siempre-copy/\n\n' +
-                  '*PRESTIGE* — $300 USD _(€265)_ 👑 _Maximum level_\nEverything in Premium + exclusive design from scratch + unlimited photos + weekly confirmation report via WhatsApp or email + custom options: printable QR for tables, invitation sending, custom buttons and lifetime access.\n👉 (PRESTIGE Example) https://invitarts.com/boda-de-cristopher-carolina/'
-        );
-
-        await sleep(2000);
-        if (userStates.get(userId)?.duenoAtendio) return;
-        await sendText(userId,
-            esEspanol
-                ? '✅ Podemos empezar con un abono de $15 y cancela el saldo restante al momento de entregarle sus invitaciones. 🙌'
-                : '✅ We can start with a $15 deposit and you pay the remaining balance upon delivery of your invitations. 🙌'
+                  '*CLASSIC* — €150\nTemplate-based, one invitation for everyone, no photos, simple and beautiful.\n👉 (CLASSIC Example) https://invitarts.com/daniela-santiago/\n\n' +
+                  '*CLASSIC ROYALE* — €175 ⭐ _Most popular_\nCustom design with personalized name and number of passes + 4 photos + music and sending platform.\n👉 (CLASSIC ROYALE Example) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
+                  '*PREMIUM* — €250 👑\nEverything in Classic Royale + unlimited invitations + up to 20 photos + animated icons, premium animations, max confirmation date and more.\n👉 (PREMIUM Example) https://invitarts.com/boda-de-camila-martin-un-amor-para-siempre-muestra/'
         );
 
         await sleep(2000);
@@ -169,15 +152,41 @@ async function enviarSecuencia(userId, esEspanol) {
         await sendText(userId,
             esEspanol
                 ? '*Para comenzar, llena el pequeño formulario justo debajo 👇*\n' +
-                  '📋 ¡Rápido y fácil, solo 2 minutos!\n' +
-                  'Una vez completado, el sistema te enviará automáticamente un correo con los datos bancarios.\n' +
-                  'Luego solo *compártenos el comprobante de pago* por aquí y ¡arrancamos! 🚀\n\n' +
-                  '📝 ' + FORM
+                  '📋 ¡Rápido y fácil, solo 2 minutos!\n\n' +
+                  '📝 ' + FORM + '\n\n' +
+                  'O si lo prefiere, también puede enviarnos por WhatsApp los detalles y la temática que desea para sus invitaciones.\n\n' +
+                  'Una vez recibamos la información, nos comprometemos a entregarle las invitaciones en un plazo máximo de *5 días*.\n\n' +
+                  'Podemos empezar con un abono inicial de *€20*, que puede realizar al siguiente número de cuenta:\n\n' +
+                  'Nombre del titular: Guido Cristopher Alvarez Granda\n' +
+                  'IBAN: MT15CFTE28004000000000006286553\n' +
+                  'BIC: CFTEMTM1XXX\n' +
+                  'Tipo de cuenta: Virtual IBAN\n' +
+                  'Nombre y dirección del banco: OPENPAYD FINANCIAL SERVICES MALTA LTD,\n' +
+                  'Floor 3, 137 Spinola Road, St. Julian\'s, STJ 3011, Eastern Region, MT\n\n' +
+                  'O por PayPal:\n' + PAYPAL + '\n\n' +
+                  'El saldo restante podrá ser cancelado en el momento de la entrega de sus invitaciones. ✨'
                 : '*To get started, fill out the short form below 👇*\n' +
-                  '📋 Quick and easy, only 2 minutes!\n' +
-                  'Once completed, the system will automatically send you an email with the bank details.\n' +
-                  'Then just *share the payment receipt* with us here and we get started! 🚀\n\n' +
-                  '📝 ' + FORM
+                  '📋 Quick and easy, only 2 minutes!\n\n' +
+                  '📝 ' + FORM + '\n\n' +
+                  'Or if you prefer, you can also send us the details and theme you want for your invitations via WhatsApp.\n\n' +
+                  'Once we receive the information, we commit to delivering your invitations within a maximum of *5 days*.\n\n' +
+                  'We can start with an initial deposit of *€20*, which you can send to the following account:\n\n' +
+                  'Account holder: Guido Cristopher Alvarez Granda\n' +
+                  'IBAN: MT15CFTE28004000000000006286553\n' +
+                  'BIC: CFTEMTM1XXX\n' +
+                  'Account type: Virtual IBAN\n' +
+                  'Bank name and address: OPENPAYD FINANCIAL SERVICES MALTA LTD,\n' +
+                  'Floor 3, 137 Spinola Road, St. Julian\'s, STJ 3011, Eastern Region, MT\n\n' +
+                  'Or via PayPal:\n' + PAYPAL + '\n\n' +
+                  'The remaining balance can be paid at the time of delivery of your invitations. ✨'
+        );
+
+        await sleep(2000);
+        if (userStates.get(userId)?.duenoAtendio) return;
+        await sendText(userId,
+            esEspanol
+                ? 'Si tiene alguna pregunta, por favor coméntenos, estamos para servirle ✨'
+                : 'If you have any questions, please let us know, we are here to help you ✨'
         );
 
         const estado = userStates.get(userId);
@@ -216,7 +225,7 @@ async function enviarSecuencia(userId, esEspanol) {
                               '🌍 *Plataforma multiidioma* — Tus invitados pueden verla en su propio idioma, sin importar de dónde vengan\n' +
                               '📊 *Panel en tiempo real* — Sabes en todo momento quién confirmó, quién no y cuántos asistirán\n' +
                               '📸 *Álbum compartido* — Tus invitados suben sus fotos directamente desde la invitación\n\n' +
-                              'Todo esto en una sola plataforma, desde *$100 USD* — o menos si realizas el pago al 50% al inicio y aprovechas el descuento 🎉\n\n' +
+                              'Todo esto en una sola plataforma, desde *€150* 🎉\n\n' +
                               '¿Te animas a empezar? Llena el formulario y te contactamos enseguida:\n📝 ' + FORM + ' 😊'
                             : '💌 Hello again, I am *Cisne* from *Invitarts*. 👋\n\n' +
                               'I wanted to tell you a little more about everything your digital invitation includes, because it goes far beyond the design:\n\n' +
@@ -225,7 +234,7 @@ async function enviarSecuencia(userId, esEspanol) {
                               '🌍 *Multilingual platform* — Your guests can view it in their own language, no matter where they come from\n' +
                               '📊 *Real-time dashboard* — Know at all times who confirmed, who has not and how many will attend\n' +
                               '📸 *Shared album* — Your guests upload their photos directly from the invitation\n\n' +
-                              'All of this in one platform, from *$100 USD* — or less if you pay 50% upfront and take advantage of the discount 🎉\n\n' +
+                              'All of this in one platform, from *€150* 🎉\n\n' +
                               'Ready to get started? Fill out the form and we will contact you right away:\n📝 ' + FORM + ' 😊'
                     );
                     e.seguimiento2Enviado = true;
@@ -453,7 +462,7 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTS BOT OFICIAL v4.4 (Baileys)');
+    console.log('\n🤖 INVITARTS BOT OFICIAL v4.5 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
