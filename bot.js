@@ -12,18 +12,16 @@ let sock = null;
 
 const BASE = 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/';
 const FIREBASE_URLS = {
-    imagenLogo:    BASE + 'logits.webp?alt=media&token=36b8f135-f417-43f9-b400-51f6b64a7924',
-    imagenSobres:  BASE + 'jym.webp?alt=media&token=9ad8c6a6-06f3-4dfd-8add-92d223b7a726',
-    imagenQuinces: BASE + 'quin.webp?alt=media&token=9b4ffb8b-607c-48c1-9759-9ffded1687dc',
-    imagenEspanol: BASE + 'dash.webp?alt=media&token=d52a6492-f8e3-4466-9686-90ed2aa58b85',
-    imagenIngles:  BASE + 'inglish_11zon_11zon_11zon.webp?alt=media&token=a26791c9-d4a0-4d48-9e9b-6eff1e4c9824'
+    audio:           'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/AudioExplicativo.mp3?alt=media',
+    imagenSobres:    BASE + 'dia1.webp?alt=media&token=d42a626c-c48d-48c3-a152-3801e174be0d',
+    imagenCatalogo:  BASE + 'catalogue_11zon.webp?alt=media&token=e8760350-1beb-4687-ae76-4f57fd40ac4f',
+    imagenPlataforma: BASE + 'plataforma2222_11zon.webp?alt=media&token=233482a7-aa76-43be-bd60-a338ca953d7b'
 };
 
 const userStates      = new Map();
 const processingUsers = new Map();
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-const FORM = 'https://invitarts.com/formulario/';
-const PAYPAL = 'https://www.paypal.com/paypalme/CristopherAlvarezG?locale.x=es_XC&country.x=EC';
+const FORM = 'https://invitartes.com/plataforma-administracion-eventos/';
 
 async function sendText(jid, text) {
     if (!sock) return;
@@ -39,38 +37,30 @@ async function sendImage(jid, url, caption) {
     }
 }
 
+async function sendAudio(jid, url) {
+    if (!sock) return;
+    try {
+        await sock.sendMessage(jid, { audio: { url }, mimetype: 'audio/mp4', ptt: false });
+    } catch {
+        console.log('⚠️ Error enviando audio');
+    }
+}
+
 async function enviarBienvenida(userId) {
     try {
         const e = userStates.get(userId);
         if (e && e.duenoAtendio) return;
-        await sendImage(userId, FIREBASE_URLS.imagenLogo,
-            '🎉 ¡Hola! Bienvenido/a a nuestro servicio de invitaciones digitales.\n\n' +
-            '👇 Elige una de las siguientes opciones *escribiendo el número* correspondiente:\n\n' +
-            '1️⃣ Explícame sobre las invitaciones digitales\n' +
+        await sendText(userId,
+            '🎉 ¡Hola! Bienvenido/a a *Invitartes*.\n\n' +
+            '👇 Elija una opción *escribiendo el número*:\n\n' +
+            '1️⃣ Explíqueme sobre las invitaciones digitales\n' +
             '2️⃣ Hablar con un asesor\n' +
-            '3️⃣ Switch to English 🇺🇸\n\n' +
-            '✍️ Escribe solo el número *1*, *2* o *3* para continuar.'
+            '3️⃣ Tell me about digital invitations 🇺🇸\n' +
+            '4️⃣ Speak with an advisor 🇺🇸\n\n' +
+            '✍️ Escriba solo el número *1*, *2*, *3* o *4* para continuar.'
         );
     } catch (err) {
         console.error('❌ Error bienvenida:', err.message);
-    } finally {
-        processingUsers.delete(userId);
-    }
-}
-
-async function enviarMenuIngles(userId) {
-    try {
-        const e = userStates.get(userId);
-        if (e && e.duenoAtendio) return;
-        await sleep(1000);
-        await sendImage(userId, FIREBASE_URLS.imagenLogo,
-            'How can I help you today?\n\n' +
-            '1️⃣ I want to learn about digital invitations\n' +
-            '2️⃣ I prefer to speak with an advisor\n\n' +
-            '✍️ Type only the number *1 or 2* to continue.'
-        );
-    } catch (err) {
-        console.error('❌ Error menú inglés:', err.message);
     } finally {
         processingUsers.delete(userId);
     }
@@ -86,98 +76,103 @@ async function enviarSecuencia(userId, esEspanol) {
         if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId,
             esEspanol
-                ? '¡Hola! 👋 Te saludamos de *Invitarts*, con gusto te contamos sobre nuestras invitaciones digitales ✨\n\n' +
-                  '*¿QUÉ INCLUYE TU INVITACIÓN?*\n\n' +
-                  '🎨 Diseño 100% personalizado a tu estilo\n' +
-                  '🎵 Música, fotos y videos incluidos\n' +
-                  '💬 Mensajes de tus invitados en un solo lugar\n' +
-                  '📸 Galería colaborativa que se actualiza en vivo mientras el evento sucede\n' +
-                  '🎶 Tus invitados piden las canciones que quieren escuchar\n' +
-                  '✅ Código QR para confirmar asistencia y validar entrada el día del evento\n' +
-                  '⬇️ Descarga de fotos directo desde la plataforma\n' +
-                  '🌍 Compártela por WhatsApp o redes en segundos'
-                : 'Hello! 👋 Greetings from *Invitarts*, we are happy to tell you about our digital invitations ✨\n\n' +
-                  "*✨ WHAT'S INCLUDED?*\n\n" +
-                  '🎨 100% custom design, your style\n' +
-                  '🎵 Music, photos and videos included\n' +
-                  '💬 All guest messages in one place\n' +
-                  '📸 Live collaborative gallery that updates as the event happens\n' +
-                  '🎶 Guests request the songs they want to hear\n' +
-                  '✅ QR code for RSVP and door check-in on event day\n' +
-                  '⬇️ Download photos directly from the platform\n' +
-                  '🌍 Share via WhatsApp or social media in seconds'
+                ? '¡Hola! 👋 Le saludamos de *Invitartes*, con gusto le contamos sobre nuestras invitaciones digitales ✨\n\n' +
+                  '¿Sabía que su invitación puede ser toda una experiencia? 🤩\n\n' +
+                  '🎨 Crea invitaciones ilimitadas y personalizadas\n' +
+                  '🎵 Con música, fotos y videos incluidos\n' +
+                  '💬 Recibe y ve todos los mensajes de sus invitados\n' +
+                  '📸 Sus invitados pueden subir sus fotos directamente desde la invitación, ¡creando un álbum compartido en tiempo real!\n' +
+                  '✅ Confirmaciones en tiempo real\n' +
+                  '🌍 Llega a todo el mundo en segundos\n' +
+                  '📊 *Plataforma privada* con contadores en tiempo real, fecha máxima de confirmación, invitaciones ilimitadas y escáner QR opcional'
+                : 'Hello! 👋 Greetings from *Invitartes*, we are happy to tell you about our digital invitations ✨\n\n' +
+                  'Did you know your invitation can be a whole experience? 🤩\n\n' +
+                  '🎨 Create unlimited and personalized invitations\n' +
+                  '🎵 With music, photos and videos included\n' +
+                  '💬 Receive and view all messages from your guests\n' +
+                  '📸 Your guests can upload their photos directly from the invitation, creating a shared album in real time!\n' +
+                  '✅ Real-time confirmations\n' +
+                  '🌍 Reaches anywhere in the world in seconds\n' +
+                  '📊 *Private platform* with real-time counters, max confirmation date, unlimited invitations and optional QR scanner'
         );
 
         await sleep(2000);
         if (userStates.get(userId)?.duenoAtendio) return;
         await sendImage(userId, FIREBASE_URLS.imagenSobres,
             esEspanol
-                ? '*Ejemplo 1*\n💫 *El amor tiene fecha.*\n\nJosé & María están escribiendo el capítulo más bonito de su historia, y quieren que tú lo vivas con ellos.\n\nEntra a su invitación digital, confirma tu asistencia y prepárate para una celebración inolvidable. 🥂🤍\n\n👉 https://invitarts.com/boda-de-jose-maria/'
-                : '*Example 1*\n💫 *Love has a date.*\n\nJosé & María are writing the most beautiful chapter of their story, and they want you to live it with them.\n\nOpen their digital invitation, confirm your attendance and get ready for an unforgettable celebration. 🥂🤍\n\n👉 https://invitarts.com/boda-de-jose-maria/'
+                ? '✨ *Ejemplo real 1 — Boda* ✨\n\n💍 Dos almas, un destino, una historia que comienza... 🌹\n\nEl amor más bonito merece ser celebrado de la manera más especial. Le invitamos a ser parte de este momento único que guardaremos en el corazón para siempre. 💫\n\nConfirme su asistencia dentro de la invitación 👇\n🔗 https://invitartes.com/daniel-alexandra-nuestra-boda-muestra/'
+                : '✨ *Real example 1 — Wedding* ✨\n\n💍 Two souls, one destiny, a story that begins... 🌹\n\nThe most beautiful love deserves to be celebrated in the most special way. We invite you to be part of this unique moment we will keep in our hearts forever. 💫\n\nConfirm your attendance inside the invitation 👇\n🔗 https://invitartes.com/daniel-alexandra-nuestra-boda-muestra/'
         );
 
         await sleep(2000);
         if (userStates.get(userId)?.duenoAtendio) return;
-        await sendImage(userId, FIREBASE_URLS.imagenQuinces,
+        await sendImage(userId, FIREBASE_URLS.imagenCatalogo,
             esEspanol
-                ? '*Ejemplo 2*\n👸🏻✨ *Una princesa está a punto de convertirse en reina...*\n\nMilenna cumple XV años y quiere celebrarlo rodeada de las personas que más quiere. ¿Estás listo para ser parte de esta noche inolvidable?\n\nEntra a su invitación digital, confirma tu asistencia y prepárate para una fiesta que se quedará en tu corazón. 🎉🌸\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
-                : '*Example 2*\n👸🏻✨ *A princess is about to become a queen...*\n\nMilenna is turning XV and wants to celebrate surrounded by the people she loves most. Are you ready to be part of this unforgettable night?\n\nOpen her digital invitation, confirm your attendance and get ready for a party that will stay in your heart. 🎉🌸\n\n👉 https://invitarts.com/milenna-guzman-%e2%9c%a8-mis-xv-una-celebracion-unica-muestra/'
+                ? '¡Con todo cariño le enviamos nuestro catálogo! 🎉 para que pueda revisar otros modelos que se ajusten a la temática de su evento. 📋✨\n\nÉchele un vistazo: https://invitartes.com/catalogo/\n\nPuede elegir un modelo del catálogo y lo adaptamos a su temática, o creamos un diseño único según sus colores e ideas. 💛'
+                : 'We are happy to share our catalog with you! 🎉 so you can explore other models that suit your event\'s theme. 📋✨\n\nTake a look: https://invitartes.com/catalogo/\n\nYou can choose a model from the catalog and we adapt it to your theme, or we create a unique design based on your colors and ideas. 💛'
         );
 
         await sleep(2000);
         if (userStates.get(userId)?.duenoAtendio) return;
-        await sendImage(userId,
-            esEspanol ? FIREBASE_URLS.imagenEspanol : FIREBASE_URLS.imagenIngles,
+        await sendImage(userId, FIREBASE_URLS.imagenPlataforma,
             esEspanol
-                ? '🔗 Conoce cómo funciona nuestra plataforma y las características detalladas de cada paquete:\n👉 (🎬 *Click para ver video de la plataforma*)  https://invitarts.com/nuestra-plataforma/'
-                : '🔗 Learn how our platform works and see the detailed features of each package:\n👉 (🎬 *Click to watch platform video*)  https://invitarts.com/nuestra-plataforma/'
+                ? '🔗 Le invitamos a visitar este enlace donde podrá conocer cómo funciona nuestra plataforma de administración de invitaciones y ver las características detalladas de cada paquete:\n\n👉 https://invitartes.com/caracteristicas/'
+                : '🔗 We invite you to visit this link where you can learn how our invitation management platform works and see the detailed features of each package:\n\n👉 https://invitartes.com/caracteristicas/'
+        );
+
+        if (esEspanol) {
+            await sleep(1500);
+            if (userStates.get(userId)?.duenoAtendio) return;
+            await sendText(userId, '🎧 Le explicamos brevemente nuestros paquetes en el siguiente audio:');
+            await sleep(800);
+            if (userStates.get(userId)?.duenoAtendio) return;
+            await sendAudio(userId, FIREBASE_URLS.audio);
+        }
+
+        await sleep(2000);
+        if (userStates.get(userId)?.duenoAtendio) return;
+        await sendText(userId,
+            esEspanol
+                ? '🎁 *Nuestros Paquetes*\n\n' +
+                  '_Todas nuestras invitaciones son completamente personalizadas_ 🎨\n\n' +
+                  '*DELUXE* — $105\nDiseño con nombre y número de pases personalizados + 4 fotos + música y plataforma de envíos.\n👉 (Ejemplo DELUXE) https://invitartes.com/invitacion-baby-shower-muestra/\n\n' +
+                  '*ÉLITE* — $130 👑\nTodo lo del Deluxe + *invitaciones ilimitadas* + hasta 20 fotos + íconos animados, animaciones premium, fecha máxima de confirmación y más.\n👉 (Ejemplo ÉLITE) https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-y-adriana/\n\n' +
+                  '*ÉLITE PLUS* — $150 🚀\nTodo lo del Élite + página exclusiva de carga de fotos vinculada a QR imprimible + PDF A5 con el código QR para colocar en mesas o arreglos florales y subir fotos + QR editable para imprimirlo donde lo necesite.\n👉 (Ejemplo ÉLITE PLUS) https://invitartes.com/daniel-alexandra-nuestra-boda-muestra/\n\n' +
+                  '💡 *Save the Date* — $20 adicionales _(precio especial al adquirir cualquier plan)_\nPágina exclusiva como expectativa para que sus invitados sepan cuándo es el evento.'
+                : '🎁 *Our Packages*\n\n' +
+                  '_All our invitations are completely personalized_ 🎨\n\n' +
+                  '*DELUXE* — $105\nCustom design with personalized name and number of passes + 4 photos + music and sending platform.\n👉 (DELUXE Example) https://invitartes.com/invitacion-baby-shower-muestra/\n\n' +
+                  '*ELITE* — $130 👑\nEverything in Deluxe + *unlimited invitations* + up to 20 photos + animated icons, premium animations, max confirmation date and more.\n👉 (ELITE Example) https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-y-adriana/\n\n' +
+                  '*ELITE PLUS* — $150 🚀\nEverything in Elite + exclusive photo upload page linked to printable QR + A5 PDF with QR code to place on tables or floral arrangements and upload photos + editable QR to print wherever you need it.\n👉 (ELITE PLUS Example) https://invitartes.com/daniel-alexandra-nuestra-boda-muestra/\n\n' +
+                  '💡 *Save the Date* — $20 additional _(special price when purchasing any plan)_\nExclusive page as a teaser so your guests know when the event is.'
         );
 
         await sleep(2000);
         if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId,
             esEspanol
-                ? '🎁 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas 🎨\n\n' +
-                  '*CLÁSICO* — €150\nBasado en plantilla, una sola invitación para todos, sin fotos, sencillo y bonito.\n👉 (Ejemplo CLÁSICO) https://invitarts.com/daniela-santiago/\n\n' +
-                  '*CLÁSICO ROYALE* — €175 ⭐ _Más popular_\nDiseño con nombre y número de pases personalizados + 4 fotos + música y plataforma de envíos.\n👉 (Ejemplo CLÁSICO ROYALE) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
-                  '*PREMIUM* — €250 👑\nTodo lo del Clásico Royale + invitaciones ilimitadas + hasta 20 fotos + íconos animados, animaciones premium, fecha máxima de confirmación y más.\n👉 (Ejemplo PREMIUM) https://invitarts.com/boda-de-camila-martin-un-amor-para-siempre-muestra/'
-                : '🎁 *Our Packages*\nAll our invitations are completely personalized 🎨\n\n' +
-                  '*CLASSIC* — €150\nTemplate-based, one invitation for everyone, no photos, simple and beautiful.\n👉 (CLASSIC Example) https://invitarts.com/daniela-santiago/\n\n' +
-                  '*CLASSIC ROYALE* — €175 ⭐ _Most popular_\nCustom design with personalized name and number of passes + 4 photos + music and sending platform.\n👉 (CLASSIC ROYALE Example) https://invitarts.com/boda-de-marco-veronica-muestra/\n\n' +
-                  '*PREMIUM* — €250 👑\nEverything in Classic Royale + unlimited invitations + up to 20 photos + animated icons, premium animations, max confirmation date and more.\n👉 (PREMIUM Example) https://invitarts.com/boda-de-camila-martin-un-amor-para-siempre-muestra/'
-        );
-
-        await sleep(2000);
-        if (userStates.get(userId)?.duenoAtendio) return;
-        await sendText(userId,
-            esEspanol
-                ? '*Para comenzar, llena el pequeño formulario justo debajo 👇*\n' +
-                  '📋 ¡Rápido y fácil, solo 2 minutos!\n\n' +
-                  '📝 ' + FORM + '\n\n' +
+                ? 'Para iniciar con el proceso, por favor complete el siguiente formulario (Datos para sus invitaciones):\n📝 ' + FORM + '\n\n' +
                   'O si lo prefiere, también puede enviarnos por WhatsApp los detalles y la temática que desea para sus invitaciones.\n\n' +
                   'Una vez recibamos la información, nos comprometemos a entregarle las invitaciones en un plazo máximo de *5 días*.\n\n' +
-                  'Podemos empezar con un abono inicial de *€20*, que puede realizar al siguiente número de cuenta:\n\n' +
-                  'Nombre del titular: Guido Cristopher Alvarez Granda\n' +
-                  'IBAN: MT15CFTE28004000000000006286553\n' +
-                  'BIC: CFTEMTM1XXX\n' +
-                  'Tipo de cuenta: Virtual IBAN\n' +
-                  'Nombre y dirección del banco: OPENPAYD FINANCIAL SERVICES MALTA LTD,\n' +
-                  'Floor 3, 137 Spinola Road, St. Julian\'s, STJ 3011, Eastern Region, MT\n\n' +
-                  'O por PayPal:\n' + PAYPAL + '\n\n' +
+                  'Empezamos con un abono inicial de *$10*, que puede realizar al siguiente número de cuenta:\n\n' +
+                  '🏦 *Banco de Loja*\n' +
+                  'Número de cuenta: *2904553231*\n' +
+                  'Cédula: *1104753122*\n' +
+                  'Tipo de cuenta: Cuenta de ahorros _(cuenta activa)_\n' +
+                  'Titular: *ALVAREZ GRANDA, GUIDO CRISTOPHER*\n\n' +
                   'El saldo restante podrá ser cancelado en el momento de la entrega de sus invitaciones. ✨'
-                : '*To get started, fill out the short form below 👇*\n' +
-                  '📋 Quick and easy, only 2 minutes!\n\n' +
-                  '📝 ' + FORM + '\n\n' +
+                : 'To start the process, please fill out the following form (Details for your invitations):\n📝 ' + FORM + '\n\n' +
                   'Or if you prefer, you can also send us the details and theme you want for your invitations via WhatsApp.\n\n' +
                   'Once we receive the information, we commit to delivering your invitations within a maximum of *5 days*.\n\n' +
-                  'We can start with an initial deposit of *€20*, which you can send to the following account:\n\n' +
-                  'Account holder: Guido Cristopher Alvarez Granda\n' +
-                  'IBAN: MT15CFTE28004000000000006286553\n' +
-                  'BIC: CFTEMTM1XXX\n' +
-                  'Account type: Virtual IBAN\n' +
-                  'Bank name and address: OPENPAYD FINANCIAL SERVICES MALTA LTD,\n' +
-                  'Floor 3, 137 Spinola Road, St. Julian\'s, STJ 3011, Eastern Region, MT\n\n' +
-                  'Or via PayPal:\n' + PAYPAL + '\n\n' +
+                  'We start with an initial deposit of *$10*, which you can send using one of the following options:\n\n' +
+                  '🇪🇨 *If you are in Ecuador — Bank transfer:*\n' +
+                  '🏦 Banco de Loja\n' +
+                  'Account number: *2904553231*\n' +
+                  'ID: *1104753122*\n' +
+                  'Account type: Savings account _(active account)_\n' +
+                  'Holder: *ALVAREZ GRANDA, GUIDO CRISTOPHER*\n\n' +
+                  '🌍 *If you are outside Ecuador — PayPal:*\n' +
+                  '👉 https://paypal.me/CristopherAlvarezG?locale.x=es_XC&country.x=EC\n\n' +
                   'The remaining balance can be paid at the time of delivery of your invitations. ✨'
         );
 
@@ -195,6 +190,7 @@ async function enviarSecuencia(userId, esEspanol) {
             estado.respondioPostSecuencia = false;
             estado.seguimiento1Enviado    = false;
             estado.seguimiento2Enviado    = false;
+            estado.seguimiento3Enviado    = false;
         }
         console.log('✅ Secuencia completa: ' + userId);
 
@@ -204,8 +200,8 @@ async function enviarSecuencia(userId, esEspanol) {
                 try {
                     await sendText(userId,
                         esEspanol
-                            ? '¡Hola! 👋 Soy *Cisne* de *Invitarts*.\n\n¿Te quedó alguna duda sobre los paquetes o el proceso? Estoy aquí para ayudarte. 😊\n\nCuéntame, ¿para qué tipo de evento estás pensando tu invitación? 🎉'
-                            : 'Hello! 👋 I am *Cisne* from *Invitarts*.\n\nDo you have any questions about the packages or the process? I am here to help. 😊\n\nTell me, what type of event are you planning your invitation for? 🎉'
+                            ? '¡Hola! 👋 Soy *Carolina* de *Invitartes*, ¿tiene alguna pregunta sobre los paquetes?\n\nEstoy aquí para ayudarle ✨'
+                            : 'Hello! 👋 I am *Carolina* from *Invitartes*, do you have any questions about our packages?\n\nI am here to help you ✨'
                     );
                     e.seguimiento1Enviado = true;
                 } catch { console.log('⚠️ Error seguimiento 1'); }
@@ -214,31 +210,49 @@ async function enviarSecuencia(userId, esEspanol) {
 
         setTimeout(async () => {
             const e = userStates.get(userId);
-            if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && !e.seguimiento2Enviado && !e.duenoAtendio) {
+            if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && e.seguimiento1Enviado && !e.seguimiento2Enviado && !e.duenoAtendio) {
                 try {
                     await sendText(userId,
                         esEspanol
-                            ? '💌 Hola de nuevo, soy *Cisne* de *Invitarts*. 👋\n\n' +
-                              'Quería contarte un poco más sobre todo lo que incluye tu invitación digital, porque va mucho más allá del diseño:\n\n' +
-                              '🪑 *Asignación de mesa* — Cada invitado sabe exactamente dónde sentarse, sin confusiones el día del evento\n' +
-                              '📲 *Código QR personalizado* _(opcional)_ — Valida y confirma la asistencia en la puerta de forma rápida y elegante\n' +
-                              '🌍 *Plataforma multiidioma* — Tus invitados pueden verla en su propio idioma, sin importar de dónde vengan\n' +
-                              '📊 *Panel en tiempo real* — Sabes en todo momento quién confirmó, quién no y cuántos asistirán\n' +
-                              '📸 *Álbum compartido* — Tus invitados suben sus fotos directamente desde la invitación\n\n' +
-                              'Todo esto en una sola plataforma, desde *€150* 🎉\n\n' +
-                              '¿Te animas a empezar? Llena el formulario y te contactamos enseguida:\n📝 ' + FORM + ' 😊'
-                            : '💌 Hello again, I am *Cisne* from *Invitarts*. 👋\n\n' +
-                              'I wanted to tell you a little more about everything your digital invitation includes, because it goes far beyond the design:\n\n' +
-                              '🪑 *Table assignment* — Each guest knows exactly where to sit, no confusion on the day of the event\n' +
-                              '📲 *Custom QR code* _(optional)_ — Validate and confirm attendance at the door quickly and elegantly\n' +
-                              '🌍 *Multilingual platform* — Your guests can view it in their own language, no matter where they come from\n' +
-                              '📊 *Real-time dashboard* — Know at all times who confirmed, who has not and how many will attend\n' +
-                              '📸 *Shared album* — Your guests upload their photos directly from the invitation\n\n' +
-                              'All of this in one platform, from *€150* 🎉\n\n' +
-                              'Ready to get started? Fill out the form and we will contact you right away:\n📝 ' + FORM + ' 😊'
+                            ? 'Le dejo algunos ejemplos más:\n\n• XV años (Van Gogh): https://invitartes.com/xv-anos-anghelith-cuando-el-cielo-se-lleno-de-estrellas/\n• Boda moderna: https://invitartes.com/invitacion-a-la-boda-de-israel-y-genesis/\n• Graduación: https://invitartes.com/invitacion-graduacion-carlos-auquilla/\n\nRecuerde que también contamos con el plan *ÉLITE PLUS* que incluye página exclusiva de carga de fotos, PDF A5 con QR para mesas o arreglos florales y QR editable. 🚀\n\nPara comenzar:\n📝 ' + FORM + '\n\nQuedo atenta 💛'
+                            : 'Here are some more examples:\n\n• Sweet 15 (Van Gogh): https://invitartes.com/xv-anos-anghelith-cuando-el-cielo-se-lleno-de-estrellas/\n• Modern Wedding: https://invitartes.com/invitacion-a-la-boda-de-israel-y-genesis/\n• Graduation: https://invitartes.com/invitacion-graduacion-carlos-auquilla/\n\nRemember we also have the *ELITE PLUS* plan which includes an exclusive photo upload page, A5 PDF with QR for tables or floral arrangements and editable QR. 🚀\n\nTo get started:\n📝 ' + FORM + '\n\nI am here for you 💛'
                     );
                     e.seguimiento2Enviado = true;
                 } catch { console.log('⚠️ Error seguimiento 2'); }
+            }
+        }, 14 * 60 * 1000);
+
+        setTimeout(async () => {
+            const e = userStates.get(userId);
+            if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && !e.seguimiento3Enviado && !e.duenoAtendio) {
+                try {
+                    await sendText(userId,
+                        esEspanol
+                            ? '¡Hola! 🌸 Soy *Carolina* de *Invitartes*.\n\n' +
+                              'Quería recordarle que con nuestras invitaciones digitales puede tener:\n\n' +
+                              '💌 Diseño único según su temática\n' +
+                              '✅ Confirmaciones automáticas de asistencia\n' +
+                              '🎵 Música y galería de fotos integradas\n' +
+                              '📊 Panel para ver en tiempo real quiénes asisten\n' +
+                              '🌍 Envío instantáneo a todos sus invitados\n\n' +
+                              'Todo desde *$105 USD* — con entrega en máximo 5 días.\n\n' +
+                              'Y si desea el máximo nivel, nuestro plan *ÉLITE PLUS* incluye además página exclusiva de carga de fotos, PDF A5 con QR para mesas o arreglos florales y QR editable. 🚀\n\n' +
+                              '*¿Para qué evento necesita su invitación?* 📅\n\n' +
+                              'Llene este formulario _(5 min)_ y comenzamos a dar vida a su invitación personalizada. 🎨✨\n📝 ' + FORM
+                            : 'Hello! 🌸 I am *Carolina* from *Invitartes*.\n\n' +
+                              'I wanted to remind you that with our digital invitations you can have:\n\n' +
+                              '💌 Unique design based on your theme\n' +
+                              '✅ Automatic attendance confirmations\n' +
+                              '🎵 Music and photo gallery included\n' +
+                              '📊 Real-time panel to see who is attending\n' +
+                              '🌍 Instant delivery to all your guests\n\n' +
+                              'All from *$105 USD* — delivered in maximum 5 days.\n\n' +
+                              'And if you want the maximum level, our *ELITE PLUS* plan also includes an exclusive photo upload page, A5 PDF with QR for tables or floral arrangements and editable QR. 🚀\n\n' +
+                              '*What event do you need your invitation for?* 📅\n\n' +
+                              'Fill out this form _(5 min)_ and we will start bringing your personalized invitation to life. 🎨✨\n📝 ' + FORM
+                    );
+                    e.seguimiento3Enviado = true;
+                } catch { console.log('⚠️ Error seguimiento 3'); }
             }
         }, 24 * 60 * 60 * 1000);
 
@@ -256,7 +270,7 @@ async function enviarMensajeAsesor(userId, esEspanol) {
         await sleep(1500);
         await sendText(userId,
             esEspanol
-                ? '👩🏻‍💼 ¡Perfecto! En unos momentos uno de nuestros asesores se pondrá en contacto contigo.\n\nPor favor permanece en línea 🙏\n\nSerá un placer atenderte. ✨'
+                ? '👩🏻‍💼 ¡Perfecto! En unos momentos uno de nuestros asesores se pondrá en contacto con usted.\n\nPor favor permanezca en línea 🙏\n\nSerá un placer atenderle. ✨'
                 : '👩🏻‍💼 Perfect! One of our advisors will contact you shortly.\n\nPlease stay online 🙏\n\nIt will be a pleasure to assist you. ✨'
         );
     } catch (err) {
@@ -275,7 +289,7 @@ async function startBot() {
         auth: state,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: true,
-        browser: ['Invitarts Bot Oficial', 'Chrome', '1.0.0'],
+        browser: ['Invitartes Bot', 'Chrome', '1.0.0'],
         generateHighQualityLinkPreview: false,
     });
 
@@ -297,7 +311,7 @@ async function startBot() {
         if (connection === 'open') {
             isConnected = true;
             qrCodeData = '';
-            console.log('✅ Bot Oficial conectado!');
+            console.log('✅ Bot conectado!');
         }
     });
 
@@ -318,8 +332,8 @@ async function startBot() {
                             respondioPostSecuencia: false,
                             seguimiento1Enviado: false,
                             seguimiento2Enviado: false,
+                            seguimiento3Enviado: false,
                             duenoAtendio: true,
-                            intentoMenu: 0,
                             conversacionLibre: false
                         });
                     } else {
@@ -353,8 +367,8 @@ async function startBot() {
                         respondioPostSecuencia: false,
                         seguimiento1Enviado: false,
                         seguimiento2Enviado: false,
+                        seguimiento3Enviado: false,
                         duenoAtendio: false,
-                        intentoMenu: 0,
                         conversacionLibre: false
                     });
                     enviarBienvenida(userId).catch(err => {
@@ -370,60 +384,26 @@ async function startBot() {
                 }
 
                 if (estado.paso === 'bienvenida') {
-                    if (messageText === '1') {
+                    if (messageText === '1' || messageText === '3') {
                         processingUsers.set(userId, Date.now());
-                        estado.esEspanol = true;
+                        estado.esEspanol = messageText === '1';
                         estado.paso = 'en_secuencia';
-                        enviarSecuencia(userId, true).catch(err => {
+                        enviarSecuencia(userId, estado.esEspanol).catch(err => {
                             console.error(err.message);
                             processingUsers.delete(userId);
                         });
-                    } else if (messageText === '2') {
+                    } else if (messageText === '2' || messageText === '4') {
                         processingUsers.set(userId, Date.now());
-                        estado.esEspanol = true;
+                        estado.esEspanol = messageText === '2';
                         estado.conversacionLibre = true;
                         estado.paso = 'libre';
-                        enviarMensajeAsesor(userId, true).catch(err => {
-                            console.error(err.message);
-                            processingUsers.delete(userId);
-                        });
-                    } else if (messageText === '3') {
-                        processingUsers.set(userId, Date.now());
-                        estado.esEspanol = false;
-                        estado.paso = 'menu_ingles';
-                        enviarMenuIngles(userId).catch(err => {
+                        enviarMensajeAsesor(userId, estado.esEspanol).catch(err => {
                             console.error(err.message);
                             processingUsers.delete(userId);
                         });
                     } else {
                         processingUsers.set(userId, Date.now());
                         enviarBienvenida(userId).catch(err => {
-                            console.error(err.message);
-                            processingUsers.delete(userId);
-                        });
-                    }
-                    continue;
-                }
-
-                if (estado.paso === 'menu_ingles') {
-                    if (messageText === '1') {
-                        processingUsers.set(userId, Date.now());
-                        estado.paso = 'en_secuencia';
-                        enviarSecuencia(userId, false).catch(err => {
-                            console.error(err.message);
-                            processingUsers.delete(userId);
-                        });
-                    } else if (messageText === '2') {
-                        processingUsers.set(userId, Date.now());
-                        estado.conversacionLibre = true;
-                        estado.paso = 'libre';
-                        enviarMensajeAsesor(userId, false).catch(err => {
-                            console.error(err.message);
-                            processingUsers.delete(userId);
-                        });
-                    } else {
-                        processingUsers.set(userId, Date.now());
-                        enviarMenuIngles(userId).catch(err => {
                             console.error(err.message);
                             processingUsers.delete(userId);
                         });
@@ -449,7 +429,7 @@ async function startBot() {
 
 app.get('/', async (req, res) => {
     if (isConnected) {
-        res.send('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bot Oficial</title><style>body{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}.c{background:white;padding:3rem;border-radius:20px;text-align:center}h1{color:#667eea}.s{background:#d4edda;color:#155724;padding:1rem;border-radius:10px}</style></head><body><div class="c"><h1>✅ Bot Oficial Conectado</h1><div class="s"><h2>🎉 Funcionando correctamente</h2></div></div></body></html>');
+        res.send('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bot Conectado</title><style>body{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}.c{background:white;padding:3rem;border-radius:20px;text-align:center}h1{color:#667eea}.s{background:#d4edda;color:#155724;padding:1rem;border-radius:10px}</style></head><body><div class="c"><h1>✅ Bot Conectado</h1><div class="s"><h2>🎉 Funcionando correctamente</h2></div></div></body></html>');
     } else if (qrCodeData) {
         res.send('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="refresh" content="5"><title>Conectar</title><style>body{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}.c{background:white;padding:2rem;border-radius:20px;text-align:center;max-width:500px}h1{color:#667eea}img{max-width:280px}</style></head><body><div class="c"><h1>📱 Conectar WhatsApp</h1><img src="' + qrCodeData + '" alt="QR"><p>Se actualiza cada 5 segundos</p></div></body></html>');
     } else {
@@ -462,7 +442,7 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTS BOT OFICIAL v4.5 (Baileys)');
+    console.log('\n🤖 INVITARTES BOT v4.5 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
