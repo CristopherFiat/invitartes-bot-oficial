@@ -234,8 +234,8 @@ async function enviarSecuencia(userId, esEspanol) {
             if (e && e.secuenciaCompleta && !e.respondioPostSecuencia && e.seguimiento1Enviado && !e.seguimiento2Enviado && !e.duenoAtendio) {
                 try {
                     await sendText(userId, esEspanol
-                        ? 'Te dejo algunos ejemplos más por si quieres echarles un vistazo:\n\n• Boda JP & Adriana: https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-adriana-mx/\n• Boda Hugo & Nickole: https://invitarts.com/boda-hugo-nickole-una-celebracion-unica-mx/\n\nRecuerda que con el plan *ÉLITE* obtienes invitaciones ilimitadas y control total de tu evento 👑\n\nCuando estés listo/a:\n📝 ' + FORM + '\n\nQuedo al pendiente 💛'
-                        : 'Here are some more examples:\n\n• Wedding JP & Adriana: https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-adriana-mx/\n• Wedding Hugo & Nickole: https://invitarts.com/boda-hugo-nickole-una-celebracion-unica-mx/\n\nRemember that with the *ELITE* plan you get unlimited invitations 👑\n\nWhen you are ready:\n📝 ' + FORM + '\n\nI am here for you 💛');
+                        ? 'Te dejo algunos ejemplos más por si quieres echarles un vistazo:\n\n• Boda Daniel & Alexandra: https://invitartes.com/daniel-alexandra-nuestra-boda-muestra/\n• XV años Rafaela: https://invitartes.com/erase-una-vez-mis-xv-anios-rafaela/\n\nRecuerda que con el plan *ÉLITE* obtienes invitaciones ilimitadas y control total de tu evento 👑\n\nCuando estés listo/a:\n📝 ' + FORM + '\n\nQuedo al pendiente 💛'
+                        : 'Here are some more examples for you to check out:\n\n• Wedding Daniel & Alexandra: https://invitartes.com/daniel-alexandra-nuestra-boda-muestra/\n• Sweet 15 Rafaela: https://invitartes.com/erase-una-vez-mis-xv-anios-rafaela/\n\nRemember that with the *ELITE* plan you get unlimited invitations and full event control 👑\n\nWhen you are ready:\n📝 ' + FORM + '\n\nI am here for you 💛');
                     e.seguimiento2Enviado = true;
                 } catch { console.log('⚠️ Error seguimiento MX 2'); }
             }
@@ -414,7 +414,7 @@ app.get('/', async (req, res) => {
 app.get('/health', (req, res) => { res.json({ status: 'ok', connected: isConnected }); });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTES BOT MX v1.0 (Baileys)');
+    console.log('\n🤖 INVITARTES BOT MX v1.1 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
