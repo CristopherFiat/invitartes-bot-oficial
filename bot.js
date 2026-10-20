@@ -2,6 +2,13 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLat
 const pino = require('pino');
 const QRCode = require('qrcode');
 const express = require('express');
+const fs = require('fs');
+
+// Limpiar auth_info corrupto al arrancar
+if (fs.existsSync('./auth_info')) {
+    fs.rmSync('./auth_info', { recursive: true, force: true });
+    console.log('🧹 auth_info limpiado');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,13 +16,6 @@ const PORT = process.env.PORT || 3000;
 let qrCodeData = '';
 let isConnected = false;
 let sock = null;
-
-// Limpiar sesión corrupta si existe
-const fs = require('fs');
-if (fs.existsSync('./auth_info')) {
-    fs.rmSync('./auth_info', { recursive: true, force: true });
-    console.log('🧹 auth_info limpiado');
-}
 
 const BASE = 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/';
 const FIREBASE_URLS = {
@@ -421,10 +421,9 @@ app.get('/', async (req, res) => {
 app.get('/health', (req, res) => { res.json({ status: 'ok', connected: isConnected }); });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTES BOT MX v1.1 (Baileys)');
+    console.log('\n🤖 INVITARTES BOT MX v1.2 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
 
 process.on('SIGTERM', () => process.exit(0));
-if (require.main === module) { const { execSync } = require('child_process'); execSync('node clear_auth.js', {stdio: 'inherit'}); }
