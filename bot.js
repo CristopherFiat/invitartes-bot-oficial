@@ -10,6 +10,13 @@ let qrCodeData = '';
 let isConnected = false;
 let sock = null;
 
+// Limpiar sesión corrupta si existe
+const fs = require('fs');
+if (fs.existsSync('./auth_info')) {
+    fs.rmSync('./auth_info', { recursive: true, force: true });
+    console.log('🧹 auth_info limpiado');
+}
+
 const BASE = 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/';
 const FIREBASE_URLS = {
     audio:             'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/AudioExplicativo.mp3?alt=media',
@@ -420,3 +427,4 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 process.on('SIGTERM', () => process.exit(0));
+if (require.main === module) { const { execSync } = require('child_process'); execSync('node clear_auth.js', {stdio: 'inherit'}); }
