@@ -2,13 +2,6 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLat
 const pino = require('pino');
 const QRCode = require('qrcode');
 const express = require('express');
-const fs = require('fs');
-
-// Limpiar auth_info corrupto al arrancar
-if (fs.existsSync('./auth_info')) {
-    fs.rmSync('./auth_info', { recursive: true, force: true });
-    console.log('🧹 auth_info limpiado');
-}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -421,7 +414,7 @@ app.get('/', async (req, res) => {
 app.get('/health', (req, res) => { res.json({ status: 'ok', connected: isConnected }); });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🤖 INVITARTES BOT MX v1.2 (Baileys)');
+    console.log('\n🤖 INVITARTES BOT MX v1.3 (Baileys)');
     console.log('🌐 Puerto: ' + PORT);
     startBot();
 });
