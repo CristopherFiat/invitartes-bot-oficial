@@ -417,8 +417,8 @@ async function enviarFlujoPaquetes(userId, esEspanol, tipoEvento, phone) {
         await sendImage(userId, imagenAbono, paquetesText);
         await sleep(2000); if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId, esEspanol
-            ? 'Para iniciar, puede llenar este formulario \u2014 ah\u00ed mismo escoge su paquete:\n\ud83d\udcdd ' + FORM + '\n\n' + getDatosBancarios(phone, esEspanol)
-            : 'To get started, fill out this form \u2014 there you choose your package:\n\ud83d\udcdd ' + FORM + '\n\n' + getDatosBancarios(phone, esEspanol));
+            ? 'Para iniciar con el proceso, por favor complete el siguiente formulario:\n\ud83d\udcdd ' + FORM + '\n\nO si lo prefiere, tambi\u00e9n puede enviarnos por WhatsApp los detalles.\n\nUna vez recibamos la informaci\u00f3n, nos comprometemos a entregarle las invitaciones en un plazo m\u00e1ximo de 5 d\u00edas.\n\nEmpezamos con un abono inicial de $10, que puede realizar al siguiente n\u00famero de cuenta:\n\n' + getDatosBancarios(phone, esEspanol) + '\n\nEl saldo restante podr\u00e1 ser cancelado en el momento de la entrega de sus invitaciones. \u2728'
+            : 'To get started, please fill out this form:\n\ud83d\udcdd ' + FORM + '\n\nOr you can send us the details via WhatsApp.\n\nOnce we receive your information, we will deliver your invitations within 5 days.\n\nWe start with an initial deposit of $10:\n\n' + getDatosBancarios(phone, esEspanol) + '\n\nThe remaining balance is due upon delivery. \u2728');
         await sleep(2000); if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId, esEspanol
             ? 'Si tiene alguna pregunta, por favor com\u00e9ntenos, estamos para servirle \u2728'
