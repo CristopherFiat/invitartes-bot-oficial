@@ -417,8 +417,8 @@ async function enviarFlujoPaquetes(userId, esEspanol, tipoEvento, phone) {
         await sendImage(userId, imagenAbono, paquetesText);
         await sleep(2000); if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId, esEspanol
-            ? 'Para iniciar con el proceso, por favor complete el siguiente formulario:\n\ud83d\udcdd ' + FORM + '\n\nO si lo prefiere, tambi\u00e9n puede enviarnos por WhatsApp los detalles.\n\nUna vez recibamos la informaci\u00f3n, nos comprometemos a entregarle las invitaciones en un plazo m\u00e1ximo de 5 d\u00edas.\n\nEmpezamos con un abono inicial de $10, que puede realizar al siguiente n\u00famero de cuenta:\n\n' + getDatosBancarios(phone, esEspanol) + '\n\nEl saldo restante podr\u00e1 ser cancelado en el momento de la entrega de sus invitaciones. \u2728'
-            : 'To get started, please fill out this form:\n\ud83d\udcdd ' + FORM + '\n\nOr you can send us the details via WhatsApp.\n\nOnce we receive your information, we will deliver your invitations within 5 days.\n\nWe start with an initial deposit of $10:\n\n' + getDatosBancarios(phone, esEspanol) + '\n\nThe remaining balance is due upon delivery. \u2728');
+            ? 'Para iniciar, complete este formulario:\n\ud83d\udcdd ' + FORM + '\n\n_(No es necesario llenarlo todo ahora \u2014 lo m\u00e1s importante es la crom\u00e1tica o tem\u00e1tica. El resto nos lo puede pasar despu\u00e9s.)_\n\nEmpezamos con un abono de *$10*:\n\n' + getDatosBancarios(phone, esEspanol) + '\n\nEl saldo restante lo cancela al momento de la entrega. \u2728'
+            : 'To get started, fill out this form:\n\ud83d\udcdd ' + FORM + '\n\n_(No need to fill everything now \u2014 the most important thing is the color palette or theme. You can send the rest later.)_\n\nWe start with a *$10* deposit:\n\n' + getDatosBancarios(phone, esEspanol) + '\n\nThe remaining balance is due upon delivery. \u2728');
         await sleep(2000); if (userStates.get(userId)?.duenoAtendio) return;
         await sendText(userId, esEspanol
             ? 'Si tiene alguna pregunta, por favor com\u00e9ntenos, estamos para servirle \u2728'
