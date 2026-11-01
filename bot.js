@@ -329,7 +329,7 @@ function programarSeguimientos(userId, esEspanol, phone, personaInicial) {
         try {
             const saludo = getSaludoEcuador();
             const nombre = personaInicial === 'carolina' ? 'Carolina' : 'Cristopher';
-            await sendText(userId, saludo + ', le saluda *' + nombre + '* de *Invitartes*. \u00bfTiene alguna pregunta?');
+            await sendText(userId, '\u00a1' + saludo + '! Le saluda *' + nombre + '* de *Invitartes* \ud83d\ude0a \u00bfPara qu\u00e9 fecha tiene previsto su evento?');
             e.seguimiento1Enviado = true;
         } catch { console.log('\u26a0\ufe0f Error seg 1'); }
     }, 7 * 60 * 1000);
@@ -337,7 +337,7 @@ function programarSeguimientos(userId, esEspanol, phone, personaInicial) {
         const e = userStates.get(userId);
         if (!e || !e.secuenciaCompleta || e.respondioPostSecuencia || !e.seguimiento1Enviado || e.seguimiento2Enviado || e.duenoAtendio) return;
         try {
-            await sendText(userId, esEspanol ? 'Estamos para servirle \ud83d\ude0a' : 'We are here to help you \ud83d\ude0a');
+            await sendText(userId, esEspanol ? '\u00bfTiene alguna pregunta? Estamos para servirle \ud83d\ude0a' : 'Do you have any questions? We are here to help you \ud83d\ude0a');
             e.seguimiento2Enviado = true;
         } catch { console.log('\u26a0\ufe0f Error seg 2'); }
     }, 14 * 60 * 1000);
@@ -423,13 +423,9 @@ async function enviarFlujoPaquetes(userId, esEspanol, tipoEvento, phone) {
         await sendText(userId, esEspanol
             ? 'Si tiene alguna pregunta, por favor com\u00e9ntenos, estamos para servirle \u2728'
             : 'If you have any questions, please let us know, we are here to help you \u2728');
-        await sleep(1500); if (userStates.get(userId)?.duenoAtendio) return;
-        const menu = getMenuPostPaquetes([], esEspanol);
-        await sendText(userId, menu.texto);
         const estado = userStates.get(userId);
         if (estado) {
-            estado.paso = 'flujoB_menu'; estado.menuMapa = menu.mapa;
-            estado.opcionesUsadas = []; estado.intentoMenuB = 0;
+            estado.paso = 'libre'; estado.conversacionLibre = true;
             estado.secuenciaCompleta = true; estado.respondioPostSecuencia = false;
             estado.seguimiento1Enviado = false; estado.seguimiento2Enviado = false;
             estado.seguimiento3Enviado = false; estado.seguimiento4Enviado = false;
