@@ -316,6 +316,40 @@ async function manejarOpcionMenuB(userId, opcionNum, esEspanol, phone) {
     }
     processingUsers.delete(userId);
 }
+function esDeluxeVsElite(txt) {
+    const t = txt.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s]/g, ' ');
+    const tieneDeluxe = /\b(delux(e|es|i)?|de luxe|dlx)\b/.test(t);
+    const tieneElite = /\b(e?l[iy]?[t]+(e|es)?|elait)\b/.test(t);
+    const combinado = tieneDeluxe && tieneElite;
+    const frases = [
+        'diferencia', 'diferencias', 'diferente', 'vs', 'versus', 'mejor', 'conviene',
+        'recomiendas', 'recomendas', 'incluye', 'incluye', 'trae', 'tiene', 'falta',
+        'pierdo', 'caro', 'vale la pena', 'entre', 'cual', 'que cambia', 'explica', 'info'
+    ];
+    if (combinado) return true;
+    if (tieneDeluxe || tieneElite) {
+        return frases.some(f => t.includes(f));
+    }
+    return false;
+}
+async function responderDeluxeVsElite(userId) {
+    const msg = '\ud83d\udc8c *Paquete Deluxe*\n' +
+        'Incluye una plataforma con una lista interactiva para enviar sus invitaciones. Cada invitaci\u00f3n tiene un bot\u00f3n de WhatsApp para enviarla f\u00e1cilmente a sus invitados.\n' +
+        'Trabaja bajo un solo pedido: si necesita 80 invitaciones, le activo 80. Despu\u00e9s de la entrega final, cada invitaci\u00f3n adicional tiene un valor de $10.\n\n' +
+        '\ud83d\udc51 *Paquete \u00c9lite*\n' +
+        'Incluye una plataforma m\u00e1s completa que le permite generar invitaciones ilimitadas.\n' +
+        'Esto es muy \u00fatil porque, por ejemplo, si pide 80 invitaciones y 30 personas no confirman, usted misma puede agregar nuevos invitados despu\u00e9s de la entrega final. Solo escribe el nombre del invitado y el n\u00famero de pases, da clic en \u201cGenerar invitaci\u00f3n\u201d y listo \u2728\n\n' +
+        'Adem\u00e1s incluye:\n' +
+        '\u2705 Contadores en tiempo real de invitados, pases, asistentes y confirmaciones\n' +
+        '\u2705 Fecha m\u00e1xima de confirmaci\u00f3n\n' +
+        '\u2705 Galer\u00eda con las fotos que suban sus invitados en el evento\n' +
+        '\u2705 Bandeja de entrada con los mensajes de cari\u00f1o de sus invitados\n\n' +
+        'Es nuestro paquete m\u00e1s completo y, sinceramente, el que m\u00e1s le recomiendo \ud83d\ude4c\n\n' +
+        'Esas ser\u00edan las diferencias clave. Cualquier duda, con gusto le ayudo \ud83d\ude0a';
+    await sendText(userId, msg);
+}
 function programarSeguimientos(userId, esEspanol, phone, personaInicial) {
     seguimientoPersona.set(userId, personaInicial);
     const now = new Date();
@@ -325,7 +359,7 @@ function programarSeguimientos(userId, esEspanol, phone, personaInicial) {
         try {
             const saludo = getSaludoEcuador();
             const nombre = personaInicial === 'carolina' ? 'Carolina' : 'Cristopher';
-            await sendText(userId, saludo + ', le saluda *' + nombre + '* de *Invitartes*. \u00bfTiene alguna pregunta?');
+            await sendText(userId, saludo + ', le saluda *' + nombre + '* de *Invitartes* \ud83d\ude0a \u00bfPara qu\u00e9 fecha tiene previsto su evento?');
             e.seguimiento1Enviado = true;
         } catch { console.log('\u26a0\ufe0f Error seg 1'); }
     }, 7 * 60 * 1000);
@@ -333,7 +367,7 @@ function programarSeguimientos(userId, esEspanol, phone, personaInicial) {
         const e = userStates.get(userId);
         if (!e || !e.secuenciaCompleta || e.respondioPostSecuencia || !e.seguimiento1Enviado || e.seguimiento2Enviado || e.duenoAtendio) return;
         try {
-            await sendText(userId, esEspanol ? 'Estamos para servirle \ud83d\ude0a' : 'We are here to help you \ud83d\ude0a');
+            await sendText(userId, esEspanol ? '\u00bfTiene alguna pregunta? Estamos para servirle \ud83d\ude0a' : 'Any questions? We are here to help you \ud83d\ude0a');
             e.seguimiento2Enviado = true;
         } catch { console.log('\u26a0\ufe0f Error seg 2'); }
     }, 14 * 60 * 1000);
@@ -538,6 +572,12 @@ async function startBot() {
                 if (estado && !estado.duenoAtendio && !estado.conversacionLibre && esKeywordAsesor(messageText)) {
                     processingUsers.set(userId, Date.now());
                     await enviarMensajeAsesorSolicitado(userId, estado.esEspanol !== false);
+                    continue;
+                }
+                if (estado && !estado.duenoAtendio && messageText && esDeluxeVsElite(messageText)) {
+                    processingUsers.set(userId, Date.now());
+                    await responderDeluxeVsElite(userId);
+                    processingUsers.delete(userId);
                     continue;
                 }
                 if (!estado) {
