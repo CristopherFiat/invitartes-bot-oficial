@@ -415,13 +415,9 @@ async function enviarFlujoPaquetes(userId, esEspanol, tipoEvento, phone) {
         await sendText(userId, esEspanol
             ? 'Si tiene alguna pregunta, por favor com\u00e9ntenos, estamos para servirle \u2728'
             : 'If you have any questions, please let us know, we are here to help you \u2728');
-        await sleep(1500); if (userStates.get(userId)?.duenoAtendio) return;
-        const menu = getMenuPostPaquetes([], esEspanol);
-        await sendText(userId, menu.texto);
         const estado = userStates.get(userId);
         if (estado) {
-            estado.paso = 'flujoB_menu'; estado.menuMapa = menu.mapa;
-            estado.opcionesUsadas = []; estado.intentoMenuB = 0;
+            estado.paso = 'libre'; estado.conversacionLibre = true;
             estado.secuenciaCompleta = true; estado.respondioPostSecuencia = false;
             estado.seguimiento1Enviado = false; estado.seguimiento2Enviado = false;
             estado.seguimiento3Enviado = false; estado.seguimiento4Enviado = false;
