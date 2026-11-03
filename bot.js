@@ -530,42 +530,10 @@ async function enviarDiagnosticoQuiz(userId) {
         '\u00bfCu\u00e1l es su siguiente paso? \ud83d\udc47\n\n' +
         '1\ufe0f\u20e3 Contratar paquete\n' +
         '2\ufe0f\u20e3 Ver otros paquetes\n' +
-        '3\ufe0f\u20e3 Hablar con un asesor\n\n' +
+        '3\ufe0f\u20e3 Ver ejemplos de invitaciones\n\n' +
         '\u270d\ufe0f Escriba solo el n\u00famero.'
     );
     e.paso = 'quiz_menu';
-    await sleep(1500);
-
-    const copys = {
-        unica:   'Mire algunos ejemplos \ud83d\ude0d F\u00edjese c\u00f3mo cuentan su historia al deslizar. La suya puede ser as\u00ed, con sus colores y su canci\u00f3n.',
-        control: 'As\u00ed se ve su panel el d\u00eda que env\u00eda las invitaciones: cada confirmaci\u00f3n aparece al instante, sin perseguir a nadie por WhatsApp \ud83d\ude4c',
-        valor:   'Para que vea todo lo que recibe por su inversi\u00f3n \ud83d\udc47 Y puede apartar con solo $10.',
-    };
-    const copyEjemplo = copys[interes];
-
-    if (interes === 'control') {
-        await sendImage(userId, MEDIA_PANEL, copyEjemplo);
-        await sleep(1200);
-        const ej = EJEMPLOS[evento][0];
-        await sendImage(userId, ej.img, ej.caption);
-    } else if (interes === 'valor') {
-        await sendImage(userId, MEDIA_COMPARATIVA, copyEjemplo);
-        await sleep(1200);
-        const ej = EJEMPLOS[evento][0];
-        await sendImage(userId, ej.img, ej.caption);
-    } else {
-        await sendText(userId, copyEjemplo);
-        for (const ej of EJEMPLOS[evento]) {
-            await sleep(800);
-            await sendImage(userId, ej.img, ej.caption);
-        }
-    }
-
-    if (!esElitePlus) {
-        await sleep(800);
-        await sendText(userId, '\ud83d\udcf8 Por solo $20 m\u00e1s, sus invitados pueden subir sus fotos en plena fiesta escaneando un QR en las mesas.');
-    }
-
     // seguimientos se lanzan desde manejarQuizMenu
 }
 
@@ -629,15 +597,83 @@ async function manejarQuizMenu(userId, msg) {
     }
 
     if (t === '3') {
-        // Hablar con asesor
-        e.paso = 'libre'; e.conversacionLibre = true; e.duenoAtendio = true;
-        await sendText(userId, 'Con gusto le conectamos con un asesor. En un momento le atendemos \ud83d\ude0a');
+        // Ver ejemplos de invitaciones → luego menú de 2 opciones
+        const evento = e.quizEvento || 'boda';
+        await sendText(userId, 'Mire algunos ejemplos 😍 F\u00edjese c\u00f3mo cada invitaci\u00f3n cuenta su propia historia al deslizar. La suya puede ser as\u00ed, con sus colores y su canci\u00f3n.');
+        for (const ej of EJEMPLOS[evento]) {
+            await sleep(800);
+            await sendImage(userId, ej.img, ej.caption);
+        }
+        await sleep(1000);
+        await sendText(userId,
+            '\u00bfCu\u00e1l es su siguiente paso? \ud83d\udc47\n\n' +
+            '1\ufe0f\u20e3 Contratar paquete\n' +
+            '2\ufe0f\u20e3 Ver otros paquetes\n\n' +
+            '\u270d\ufe0f Escriba solo el n\u00famero.'
+        );
+        e.paso = 'quiz_menu2';
+        return;
+    }
+    // Opción inválida
+    await sendText(userId, 'Escriba 1, 2 o 3 por favor \ud83d\ude0a');
+}
+
+async function manejarQuizMenu2(userId, msg) {
+    const e = userStates.get(userId);
+    if (!e) return;
+    const t = msg.trim();
+    const phone = userId.replace('@s.whatsapp.net', '');
+    const personaInicial = (clienteContador % 2 === 0) ? 'carolina' : 'cristopher';
+
+    const lanzarSeguimientos = () => {
+        e.secuenciaCompleta = true; e.respondioPostSecuencia = false;
+        e.seguimiento1Enviado = false; e.seguimiento2Enviado = false;
+        e.seguimiento3Enviado = false; e.seguimiento4Enviado = false;
+        e.seguimiento7dEnviado = false;
+        programarSeguimientos(userId, true, phone, personaInicial);
+    };
+
+    const enviarDatosPago = async () => {
+        await sendText(userId,
+            '\u00a1Qu\u00e9 emoci\u00f3n! \ud83c\udf89 Vamos a dejar lista su invitaci\u00f3n.\n\n' +
+            '*1\ufe0f\u20e3 Complete este formulario:*\n' +
+            '\ud83d\udcdd https://invitartes.com/plataforma-administracion-eventos/\n' +
+            '_(No es necesario llenarlo todo ahora. Lo m\u00e1s importante es la crom\u00e1tica o tem\u00e1tica; el resto nos lo puede pasar despu\u00e9s.)_\n\n' +
+            '*2\ufe0f\u20e3 Aparte con un abono de $10:*\n' +
+            '\ud83c\udfe6 Banco Pichincha\n' +
+            '\ud83d\udcb3 Cuenta: 2216652652\n' +
+            '\ud83e\udea6 C\u00e9dula: 1104753122\n' +
+            '\ud83d\udc64 Titular: ALVAREZ GRANDA, GUIDO CRISTOPHER\n\n' +
+            '\ud83d\udcf8 Cuando haga el abono, env\u00ednos aqu\u00ed la foto del comprobante.\n\n' +
+            'El saldo restante lo cancela al momento de la entrega. \u2728\n' +
+            '\ud83d\udee1\ufe0f Y recuerde: si no le encanta, le devolvemos su dinero.'
+        );
+        await sleep(1000);
+        await sendText(userId, 'Si tiene alguna pregunta, por favor com\u00e9ntenos, estamos para servirle \u2728');
+    };
+
+    if (t === '1') {
+        e.paso = 'libre'; e.conversacionLibre = true;
+        await enviarDatosPago();
         lanzarSeguimientos();
         return;
     }
-
-    // Opción inválida
-    await sendText(userId, 'Escriba 1, 2 o 3 por favor \ud83d\ude0a');
+    if (t === '2') {
+        e.paso = 'libre'; e.conversacionLibre = true;
+        const pkRec = e.paqueteRecomendado || null;
+        let pkText = '\ud83c\udf81 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas \ud83c\udfa8\n\n' +
+            '*ESSENTIAL* \u2014 $85\nBasado en plantilla, una sola invitaci\u00f3n para todos, sencillo y bonito.\n\n' +
+            '*DELUXE* \u2014 $105\nDise\u00f1o con nombre y n\u00famero de pases personalizados + 4 fotos + m\u00fasica y plataforma de env\u00edos.\n\n' +
+            '*\u00c9LITE* \u2014 $130 \ud83d\udc51\nTodo lo del Deluxe + invitaciones ilimitadas + hasta 20 fotos + iconos animados, animaciones premium, fecha m\u00e1xima de confirmaci\u00f3n y m\u00e1s.\n\n' +
+            '*\u00c9LITE PLUS* \u2014 $150 \ud83d\udc51\u2b50\nTodo lo del \u00c9lite + P\u00e1gina de Fotograf\u00edas Premium con QR para las mesas.';
+        if (pkRec) pkText += '\n\n\u2b50 *El que le recomendamos seg\u00fan su evento: ' + pkRec + '*';
+        await sendText(userId, pkText);
+        await sleep(1200);
+        await enviarDatosPago();
+        lanzarSeguimientos();
+        return;
+    }
+    await sendText(userId, 'Escriba 1 o 2 por favor \ud83d\ude0a');
 }
 
 function programarSeguimientos(userId, esEspanol, phone, personaInicial) {
@@ -1010,6 +1046,8 @@ async function startBot() {
                     processingUsers.set(userId, Date.now());
                     if (estado.paso === 'quiz_menu') {
                         await manejarQuizMenu(userId, messageText || '');
+                    } else if (estado.paso === 'quiz_menu2') {
+                        await manejarQuizMenu2(userId, messageText || '');
                     } else {
                         await manejarQuiz(userId, messageText || '');
                     }
