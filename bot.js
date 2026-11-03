@@ -37,6 +37,34 @@ const FORM   = 'https://invitartes.com/plataforma-administracion-eventos/';
 const GUIA   = 'https://drive.google.com/file/d/1HREPiYR6zb-eAIJqGZvLp-EJ3wM-AHgx/view?usp=sharing';
 const PAYPAL = 'https://paypal.me/CristopherAlvarezG?locale.x=es_XC&country.x=EC';
 
+const MEDIA_PANEL       = 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/panel%20cero.png?alt=media&token=769a2d3d-40b8-4d10-90d6-83a3f7a134e0';
+const MEDIA_COMPARATIVA = 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/comparativas.png?alt=media&token=dbb8640b-d761-4913-9f37-de4ee25b8493';
+
+const CARACTERISTICAS_ELITE = [
+    '✅ Invitaciones ilimitadas (cada invitado recibe la suya personalizada)',
+    '📸 Hasta 20 fotos de la pareja/fiestón',
+    '🎨 Iconos animados únicos para su evento',
+    '✨ Animaciones premium al abrir',
+    '⏳ Fecha máxima de confirmación visible para los invitados',
+    '💬 Colección de mensajes de cariño de sus invitados',
+    '🛥️ Soporte prioritario hasta el día del evento',
+].join('\n');
+
+const EJEMPLOS = {
+    boda: [
+        { img: FIREBASE_URLS.imagenSobres,  caption: '✨ *Ejemplo real 1 — Boda* ✨\n\n💍 Juan Pablo & Adriana\n🔗 https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-y-adriana/' },
+        { img: FIREBASE_URLS.imagenBoda2,   caption: '💌 *Ejemplo real 2 — Boda* ✨\n\nHugo & Nickole\n👉 https://invitarts.com/boda-hugo-nickole-una-celebracion-unica-muestras/' },
+    ],
+    xv: [
+        { img: FIREBASE_URLS.imagenLucy,    caption: '*Ejemplo 1* 🌸✨\n\nLucy te invita a vivir su cuento de hadas. 👑\n👉 https://invitartes.com/erase-una-vez-mis-xv-anos-lucy-oficial/' },
+        { img: FIREBASE_URLS.imagenRafaela, caption: '*Ejemplo 2* 🌸✨\n\nRafaela te invita a descubrir cómo continúa su historia. 👑💕\n👉 https://invitartes.com/erase-una-vez-mis-xv-anios-rafaela/' },
+    ],
+    otro: [
+        { img: FIREBASE_URLS.imagenSobres,  caption: '✨ *Ejemplo real 1 — Boda* ✨\n🔗 https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-y-adriana/' },
+        { img: FIREBASE_URLS.imagenLia,     caption: '🌸 *Ejemplo real 2 — Quince años* 🌸\n🔗 https://invitartes.com/invitacion-xv-anos-lia-haro/' },
+    ],
+};
+
 function esMexico(phone) {
     return phone && phone.startsWith('52') && phone.length >= 12 && phone.length <= 13;
 }
