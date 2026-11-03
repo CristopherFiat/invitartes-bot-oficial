@@ -415,15 +415,7 @@ async function manejarQuiz(userId, msg) {
     if (e.paso === 'quiz_invitados') {
         const map = { '1': 'menos_100', '2': '100a200', '3': 'mas_200' };
         if (!map[t]) { await quizInvalido(userId); return; }
-        e.quizInvitados = map[t]; e.quizIntento = 0; e.paso = 'quiz_si';
-        await sleep(800);
-        await sendText(userId, 'Caso resuelto \ud83d\udd75\ufe0f\n\nRevisamos sus respuestas y ya encontramos *el error invisible* que m\u00e1s podr\u00eda complicar su evento.\n\n\u00bfLo quiere conocer? \ud83d\udc40\n\u270d\ufe0f Escriba *S\u00cd* para ver su resultado.');
-        return;
-    }
-
-    if (e.paso === 'quiz_si') {
-        const norm = t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        if (norm !== 'si') { await quizInvalido(userId); return; }
+        e.quizInvitados = map[t]; e.quizIntento = 0;
         e.paso = 'libre'; e.conversacionLibre = true;
         e.testFechaHora = new Date().toISOString();
         e.paqueteRecomendado = (e.quizInvitados === 'mas_200') ? '\u00c9lite Plus' : '\u00c9lite';
@@ -493,14 +485,19 @@ async function enviarDiagnosticoQuiz(userId) {
         ? '\n\n\ud83d\udcf8 *Y lo que lo hace especial: su P\u00e1gina de Fotograf\u00edas Premium con QR*\nEn plena fiesta nadie se pone a buscar la invitaci\u00f3n en su celular. Por eso le entregamos un PDF personalizado con un QR para las mesas: sus invitados lo escanean y suben sus fotos al instante a una galer\u00eda exclusiva, que se actualiza en tiempo real en su propia p\u00e1gina y dentro de su invitaci\u00f3n.\n\u2728 Todos los momentos especiales en un solo lugar.'
         : '';
 
+    // Mensaje 2a: guía + paquete recomendado + bloque de interés
     const msgPaquete =
         '\ud83c\udf81 Aqu\u00ed tiene su gu\u00eda: *\u201cLo que nadie te mostr\u00f3 antes de tu evento\u201d*\n\ud83d\udc49 ' + GUIA + '\n\n' +
         'Y por sus respuestas, para su evento le recomendamos el *' + paquete + '* \u2b50\n\n' +
-        bloqueInteres + bloquefotos + '\n\n' +
+        bloqueInteres + bloquefotos;
+    await sendText(userId, msgPaquete);
+    await sleep(1000);
+    // Mensaje 2b: características + CTA
+    await sendText(userId,
         '*Adem\u00e1s incluye:*\n' + CARACTERISTICAS_ELITE + '\n\n' +
         'Puede empezar con solo $10 de abono.\n\ud83d\udee1\ufe0f Si no le encanta, le devolvemos su dinero.\n\n' +
-        '\ud83d\udc49 Escriba *APARTAR* y le pasamos los datos \ud83d\ude4c\n\ud83d\udc49 \u00bfQuiere comparar con los otros paquetes? Escriba *PAQUETES*';
-    await sendText(userId, msgPaquete);
+        '\ud83d\udc49 Escriba *APARTAR* y le pasamos los datos \ud83d\ude4c\n\ud83d\udc49 \u00bfQuiere comparar con los otros paquetes? Escriba *PAQUETES*'
+    );
     await sleep(1500);
 
     const copys = {
