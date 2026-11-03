@@ -146,7 +146,7 @@ async function enviarBienvenida(userId) {
             '1\ufe0f\u20e3 Quiero invitaciones para mis XV a\u00f1os \ud83d\udc51\n' +
             '2\ufe0f\u20e3 Quiero invitaciones para Boda \ud83d\udc8d\n' +
             '3\ufe0f\u20e3 Quiero invitaciones para otro evento \u2728\n' +
-            '4\ufe0f\u20e3 Quiero la gu\u00eda gratuita \ud83d\udcd6\n\n' +
+            '4\ufe0f\u20e3 \ud83d\udd0d Descubra el error invisible de su evento (QUIZ) + gu\u00eda gratis \ud83c\udf81\n\n' +
             '\u270d\ufe0f Escriba solo el n\u00famero para continuar.'
         );
     } catch (err) { console.error('\u274c Error bienvenida:', err.message); }
@@ -177,7 +177,7 @@ async function enviarMenuRepetido(userId) {
             '1\ufe0f\u20e3 Quiero invitaciones para mis XV a\u00f1os \ud83d\udc51\n' +
             '2\ufe0f\u20e3 Quiero invitaciones para Boda \ud83d\udc8d\n' +
             '3\ufe0f\u20e3 Quiero invitaciones para otro evento \u2728\n' +
-            '4\ufe0f\u20e3 Quiero la gu\u00eda gratuita \ud83d\udcd6\n\n' +
+            '4\ufe0f\u20e3 \ud83d\udd0d Descubra el error invisible de su evento (QUIZ) + gu\u00eda gratis \ud83c\udf81\n\n' +
             '\u270d\ufe0f Escriba solo el n\u00famero para continuar.'
         );
     } catch (err) { console.error('\u274c Error men\u00fa repetido:', err.message); }
@@ -350,6 +350,198 @@ async function responderDeluxeVsElite(userId) {
         'Esas ser\u00edan las diferencias clave. Cualquier duda, con gusto le ayudo \ud83d\ude0a';
     await sendText(userId, msg);
 }
+
+// ── QUIZ: flujo de diagnóstico (opción 4) ──────────────────
+async function iniciarQuiz(userId) {
+    const e = userStates.get(userId);
+    if (!e) return;
+    e.paso = 'quiz_evento';
+    e.quizEvento = null; e.quizFecha = null; e.quizInteres = null; e.quizInvitados = null;
+    e.quizIntento = 0;
+    await sleep(1000);
+    await sendText(userId,
+        '\ud83d\udd75\ufe0f \u00a1Qu\u00e9 bueno que quiera saberlo!\n\n' +
+        'Despu\u00e9s de acompa\u00f1ar a cientos de novios y quincea\u00f1eras, tenemos identificados *3 errores invisibles* que complican los eventos sin que nadie los vea venir.\n\n' +
+        'Queremos ubicar en cu\u00e1l est\u00e1 usted. Al final le decimos *cu\u00e1l es el suyo* y le regalamos la gu\u00eda _\u201cLo que nadie te mostr\u00f3 antes de tu evento\u201d_ \ud83c\udf81\n\n' +
+        'Primero, cu\u00e9ntenos: *\u00bfqu\u00e9 est\u00e1 celebrando?* \ud83c\udf89\n\n' +
+        '1\ufe0f\u20e3 XV a\u00f1os \ud83d\udc51\n' +
+        '2\ufe0f\u20e3 Boda \ud83d\udc8d\n' +
+        '3\ufe0f\u20e3 Otro evento \u2728\n\n' +
+        '\u270d\ufe0f Escriba solo el n\u00famero.'
+    );
+}
+
+async function manejarQuiz(userId, msg) {
+    const e = userStates.get(userId);
+    if (!e) return;
+    const t = msg.trim();
+
+    if (e.paso === 'quiz_evento') {
+        const map = { '1': 'xv', '2': 'boda', '3': 'otro' };
+        if (!map[t]) { await quizInvalido(userId); return; }
+        e.quizEvento = map[t]; e.quizIntento = 0; e.paso = 'quiz_fecha';
+        const primera = e.quizEvento === 'xv' ? '\u00a1Unos XV a\u00f1os, qu\u00e9 emoci\u00f3n! \ud83d\udc51'
+            : e.quizEvento === 'boda' ? '\u00a1Una boda, felicidades! \ud83d\udc8d'
+            : '\u00a1Qu\u00e9 lindo, un evento especial! \u2728';
+        await sleep(800);
+        await sendText(userId, primera + '\n\nAhora s\u00ed, *3 preguntas r\u00e1pidas* \ud83d\udc47\n\n*Pregunta 1 de 3* \ud83d\udcc5\n\u00bfCu\u00e1ndo es su evento?\n\n1\ufe0f\u20e3 En menos de 1 mes\n2\ufe0f\u20e3 Entre 1 y 3 meses\n3\ufe0f\u20e3 En m\u00e1s de 3 meses o a\u00fan sin fecha\n\n\u270d\ufe0f Escriba solo el n\u00famero.');
+        return;
+    }
+
+    if (e.paso === 'quiz_fecha') {
+        const map = { '1': 'menos_1m', '2': '1a3m', '3': 'mas_3m' };
+        if (!map[t]) { await quizInvalido(userId); return; }
+        e.quizFecha = map[t]; e.quizIntento = 0; e.paso = 'quiz_interes';
+        const primera = e.quizFecha === 'menos_1m' ? '\u00a1Uy, ya est\u00e1 cerquita! \u23f0'
+            : e.quizFecha === '1a3m' ? '\u00a1Buen momento para organizarse! \u2705'
+            : '\u00a1Va con tiempo, nos encanta! \ud83c\udf31';
+        await sleep(800);
+        await sendText(userId, primera + '\n\n*Pregunta 2 de 3* \ud83d\udc8c\nCuando busca una invitaci\u00f3n, \u00bfqu\u00e9 es lo que m\u00e1s le importa?\n\n1\ufe0f\u20e3 Que sorprenda y se vea \u00fanica, que se sienta _nuestra_\n2\ufe0f\u20e3 Tener todo bajo control: confirmaciones, pases y fotos del evento\n3\ufe0f\u20e3 Que valga la pena lo que invierto\n\n\u270d\ufe0f Escriba solo el n\u00famero.');
+        return;
+    }
+
+    if (e.paso === 'quiz_interes') {
+        const map = { '1': 'unica', '2': 'control', '3': 'valor' };
+        if (!map[t]) { await quizInvalido(userId); return; }
+        e.quizInteres = map[t]; e.quizIntento = 0; e.paso = 'quiz_invitados';
+        const primera = e.quizInteres === 'unica' ? '\u00a1Nos encanta! Quiere que se sienta especial \ud83d\udc9b'
+            : e.quizInteres === 'control' ? 'Le entendemos, es lo que m\u00e1s estresa a todos \ud83d\ude05'
+            : 'Muy bien pensado, cada d\u00f3lar debe rendir \ud83d\udc4c';
+        await sleep(800);
+        await sendText(userId, primera + '\n\n*Pregunta 3 de 3, \u00a1la \u00faltima!* \ud83d\udc65\n\u00bfM\u00e1s o menos cu\u00e1ntos invitados tendr\u00e1?\n\n1\ufe0f\u20e3 Menos de 100\n2\ufe0f\u20e3 Entre 100 y 200\n3\ufe0f\u20e3 M\u00e1s de 200\n\n\u270d\ufe0f Escriba solo el n\u00famero.');
+        return;
+    }
+
+    if (e.paso === 'quiz_invitados') {
+        const map = { '1': 'menos_100', '2': '100a200', '3': 'mas_200' };
+        if (!map[t]) { await quizInvalido(userId); return; }
+        e.quizInvitados = map[t]; e.quizIntento = 0; e.paso = 'quiz_si';
+        await sleep(800);
+        await sendText(userId, 'Caso resuelto \ud83d\udd75\ufe0f\n\nRevisamos sus respuestas y ya encontramos *el error invisible* que m\u00e1s podr\u00eda complicar su evento.\n\n\u00bfLo quiere conocer? \ud83d\udc40\n\u270d\ufe0f Escriba *S\u00cd* para ver su resultado.');
+        return;
+    }
+
+    if (e.paso === 'quiz_si') {
+        const norm = t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (norm !== 'si') { await quizInvalido(userId); return; }
+        e.paso = 'libre'; e.conversacionLibre = true;
+        e.testFechaHora = new Date().toISOString();
+        e.paqueteRecomendado = (e.quizInvitados === 'mas_200') ? '\u00c9lite Plus' : '\u00c9lite';
+        await sleep(800);
+        await enviarDiagnosticoQuiz(userId);
+        return;
+    }
+}
+
+async function quizInvalido(userId) {
+    const e = userStates.get(userId);
+    if (!e) return;
+    e.quizIntento = (e.quizIntento || 0) + 1;
+    if (e.quizIntento >= 2) {
+        e.paso = 'libre'; e.conversacionLibre = true;
+        e.secuenciaCompleta = true; e.respondioPostSecuencia = false;
+        e.seguimiento1Enviado = false; e.seguimiento2Enviado = false;
+        e.seguimiento3Enviado = false; e.seguimiento4Enviado = false;
+        e.seguimiento7dEnviado = false;
+        const phone = userId.replace('@s.whatsapp.net', '');
+        const personaInicial = (clienteContador % 2 === 0) ? 'carolina' : 'cristopher';
+        await enviarFlujoPaquetes(userId, true, e.quizEvento || 'boda', phone);
+        programarSeguimientos(userId, true, phone, personaInicial);
+    } else {
+        await sendText(userId, 'Escriba solo el n\u00famero, por favor \ud83d\ude0a');
+    }
+}
+
+async function enviarDiagnosticoQuiz(userId) {
+    const e = userStates.get(userId);
+    if (!e) return;
+    const interes   = e.quizInteres   || 'unica';
+    const fecha     = e.quizFecha     || 'mas_3m';
+    const invitados = e.quizInvitados || 'menos_100';
+    const evento    = e.quizEvento    || 'boda';
+
+    const urgencia = fecha === 'menos_1m'
+        ? '\u23f0 Y ojo: su evento ya est\u00e1 cerca. Lo ideal es que sus invitados tengan la invitaci\u00f3n al menos 3\u20134 semanas antes. Este es el momento.'
+        : fecha === '1a3m'
+            ? '\u2705 La buena noticia: est\u00e1 en el momento perfecto para resolverlo con calma.'
+            : '\ud83c\udf31 La buena noticia: va con ventaja. Con un abono de solo $10 aparta su invitaci\u00f3n y la trabajamos sin prisa.';
+
+    let diagnostico = '';
+    if (interes === 'unica') {
+        diagnostico = 'Su resultado est\u00e1 listo, y le adelantamos que tiene soluci\u00f3n \ud83d\ude09\n\nSu error invisible es *la invitaci\u00f3n del mont\u00f3n* \ud83d\ude34: sus invitados reciben decenas de invitaciones al a\u00f1o. Si la suya se ve como todas, la abren, la miran 3 segundos y se olvidan.\n\nLo que hace que la recuerden no es que sea bonita, es que *se sienta suya*: su m\u00fasica, su historia, sus colores. \ud83d\udc9b\n\n' + urgencia;
+    } else if (interes === 'control') {
+        diagnostico = 'Su resultado est\u00e1 listo, y le adelantamos que tiene soluci\u00f3n \ud83d\ude09\n\nSu error invisible es *el invitado fantasma* \ud83d\udc7b: el que no confirma, el que llega con 3 personas m\u00e1s sin avisar, el que dijo que s\u00ed y nunca apareci\u00f3.\n\nEl problema no es el dise\u00f1o, es *la lista*. Casi todos la manejan con un Excel y mensajes uno por uno\u2026 y la semana del evento todo explota. \ud83d\udca5\n\nPor eso en Invitartes su invitaci\u00f3n viene con su propio *Panel Cero Caos*: ve en tiempo real qui\u00e9n confirm\u00f3 y cu\u00e1ntos pases usa, recibe los mensajes de cari\u00f1o en una bandeja de entrada y tiene una galer\u00eda donde sus invitados suben sus fotos desde la invitaci\u00f3n.\n\n' + urgencia;
+    } else {
+        diagnostico = 'Su resultado est\u00e1 listo, y le adelantamos que tiene soluci\u00f3n \ud83d\ude09\n\nSu error invisible es *el ahorro que sale caro* \ud83d\udcb8: el riesgo no es invertir de m\u00e1s, es ahorrar en lo equivocado.\n\nMuchos pagan poco por una imagen bonita\u2026 y despu\u00e9s lo pagan en horas persiguiendo confirmaciones por WhatsApp. \u23f3\n\nEn Invitartes, *desde el paquete m\u00e1s b\u00e1sico* su invitaci\u00f3n viene con una plataforma en tiempo real: confirmaciones, pases y mensajes de sus invitados. Otros le entregan un Excel; nosotros, una plataforma.\n\n' + urgencia;
+    }
+    await sendText(userId, diagnostico);
+    await sleep(1500);
+
+    const esElitePlus = invitados === 'mas_200';
+    const paquete = esElitePlus ? '\u00c9lite Plus ($150)' : '\u00c9lite ($130)';
+
+    let bloqueInteres = '';
+    if (interes === 'unica') {
+        bloqueInteres = '\u2728 *Para que su invitaci\u00f3n sea inolvidable:*\n\ud83c\udfac Animaciones premium\n\ud83c\udfa8 Secciones personalizadas a medida, dise\u00f1adas desde cero\n\ud83c\udfb6 Su canci\u00f3n y su historia contadas al deslizar\n\ud83d\udc9b Sus colores y su estilo en cada detalle';
+    } else if (interes === 'control') {
+        bloqueInteres = '\ud83d\udcca *Para que tenga todo bajo control:*\n\u2705 Panel Cero Caos con confirmaciones en tiempo real\n\ud83c\udfdf\ufe0f Pases por invitado, sin colados\n\ud83d\udcf2 Escaneo QR en la entrada\n\ud83d\udc8c Bandeja con los mensajes de cari\u00f1o de sus invitados\n\ud83d\udcf8 Galer\u00eda donde sus invitados suben sus fotos desde la invitaci\u00f3n';
+    } else {
+        bloqueInteres = '\ud83d\udc8e *Para que cada d\u00f3lar rinda:*\n\u2705 Invitaci\u00f3n + plataforma completa en un solo pago\n\u23f3 Se ahorra horas persiguiendo confirmaciones\n\ud83d\udee5\ufe0f Soporte 24/7, aunque sea el d\u00eda del evento\n\ud83d\ude4c Nosotros nos encargamos de todo, usted solo nos da sus colores\n\n_\u00bfBusca algo m\u00e1s sencillo? Tenemos opciones desde $85. Escriba *PAQUETES*._';
+    }
+
+    const bloquefotos = esElitePlus
+        ? '\n\n\ud83d\udcf8 *Y lo que lo hace especial: su P\u00e1gina de Fotograf\u00edas Premium con QR*\nEn plena fiesta nadie se pone a buscar la invitaci\u00f3n en su celular. Por eso le entregamos un PDF personalizado con un QR para las mesas: sus invitados lo escanean y suben sus fotos al instante a una galer\u00eda exclusiva, que se actualiza en tiempo real en su propia p\u00e1gina y dentro de su invitaci\u00f3n.\n\u2728 Todos los momentos especiales en un solo lugar.'
+        : '';
+
+    const msgPaquete =
+        '\ud83c\udf81 Aqu\u00ed tiene su gu\u00eda: *\u201cLo que nadie te mostr\u00f3 antes de tu evento\u201d*\n\ud83d\udc49 ' + GUIA + '\n\n' +
+        'Y por sus respuestas, para su evento le recomendamos el *' + paquete + '* \u2b50\n\n' +
+        bloqueInteres + bloquefotos + '\n\n' +
+        '*Adem\u00e1s incluye:*\n' + CARACTERISTICAS_ELITE + '\n\n' +
+        'Puede empezar con solo $10 de abono.\n\ud83d\udee1\ufe0f Si no le encanta, le devolvemos su dinero.\n\n' +
+        '\ud83d\udc49 Escriba *APARTAR* y le pasamos los datos \ud83d\ude4c\n\ud83d\udc49 \u00bfQuiere comparar con los otros paquetes? Escriba *PAQUETES*';
+    await sendText(userId, msgPaquete);
+    await sleep(1500);
+
+    const copys = {
+        unica:   'Mire algunos ejemplos \ud83d\ude0d F\u00edjese c\u00f3mo cuentan su historia al deslizar. La suya puede ser as\u00ed, con sus colores y su canci\u00f3n.',
+        control: 'As\u00ed se ve su panel el d\u00eda que env\u00eda las invitaciones: cada confirmaci\u00f3n aparece al instante, sin perseguir a nadie por WhatsApp \ud83d\ude4c',
+        valor:   'Para que vea todo lo que recibe por su inversi\u00f3n \ud83d\udc47 Y puede apartar con solo $10.',
+    };
+    const copyEjemplo = copys[interes];
+
+    if (interes === 'control') {
+        await sendImage(userId, MEDIA_PANEL, copyEjemplo);
+        await sleep(1200);
+        const ej = EJEMPLOS[evento][0];
+        await sendImage(userId, ej.img, ej.caption);
+    } else if (interes === 'valor') {
+        await sendImage(userId, MEDIA_COMPARATIVA, copyEjemplo);
+        await sleep(1200);
+        const ej = EJEMPLOS[evento][0];
+        await sendImage(userId, ej.img, ej.caption);
+    } else {
+        await sendText(userId, copyEjemplo);
+        for (const ej of EJEMPLOS[evento]) {
+            await sleep(800);
+            await sendImage(userId, ej.img, ej.caption);
+        }
+    }
+
+    if (!esElitePlus) {
+        await sleep(800);
+        await sendText(userId, '\ud83d\udcf8 Por solo $20 m\u00e1s, sus invitados pueden subir sus fotos en plena fiesta escaneando un QR en las mesas.');
+    }
+
+    const phone = userId.replace('@s.whatsapp.net', '');
+    const personaInicial = (clienteContador % 2 === 0) ? 'carolina' : 'cristopher';
+    e.secuenciaCompleta = true; e.respondioPostSecuencia = false;
+    e.seguimiento1Enviado = false; e.seguimiento2Enviado = false;
+    e.seguimiento3Enviado = false; e.seguimiento4Enviado = false;
+    e.seguimiento7dEnviado = false;
+    programarSeguimientos(userId, true, phone, personaInicial);
+}
+
 function programarSeguimientos(userId, esEspanol, phone, personaInicial) {
     seguimientoPersona.set(userId, personaInicial);
     const now = new Date();
@@ -580,6 +772,40 @@ async function startBot() {
                     processingUsers.delete(userId);
                     continue;
                 }
+                if (estado && !estado.duenoAtendio && messageText && /^apartar$/i.test(messageText.trim())) {
+                    processingUsers.set(userId, Date.now());
+                    await sendText(userId,
+                        '\u00a1Qu\u00e9 emoci\u00f3n! \ud83c\udf89 Vamos a dejar lista su invitaci\u00f3n.\n\n' +
+                        '*1\ufe0f\u20e3 Complete este formulario:*\n' +
+                        '\ud83d\udcdd https://invitartes.com/plataforma-administracion-eventos/\n' +
+                        '_(No es necesario llenarlo todo ahora. Lo m\u00e1s importante es la crom\u00e1tica o tem\u00e1tica; el resto nos lo puede pasar despu\u00e9s.)_\n\n' +
+                        '*2\ufe0f\u20e3 Aparte con un abono de $10:*\n' +
+                        '\ud83c\udfe6 Banco Pichincha\n' +
+                        '\ud83d\udcb3 Cuenta: 2216652652\n' +
+                        '\ud83e\udea6 C\u00e9dula: 1104753122\n' +
+                        '\ud83d\udc64 Titular: ALVAREZ GRANDA, GUIDO CRISTOPHER\n\n' +
+                        '\ud83d\udcf8 Cuando haga el abono, env\u00ednos aqu\u00ed la foto del comprobante.\n\n' +
+                        'El saldo restante lo cancela al momento de la entrega. \u2728\n' +
+                        '\ud83d\udee1\ufe0f Y recuerde: si no le encanta, le devolvemos su dinero.'
+                    );
+                    await sleep(1000);
+                    await sendText(userId, 'Si tiene alguna pregunta, por favor com\u00e9ntenos, estamos para servirle \u2728');
+                    processingUsers.delete(userId);
+                    continue;
+                }
+                if (estado && !estado.duenoAtendio && messageText && /^paquetes?$/i.test(messageText.trim())) {
+                    processingUsers.set(userId, Date.now());
+                    const pkRec = estado.paqueteRecomendado || null;
+                    let pkText = '\ud83c\udf81 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas \ud83c\udfa8\n\n' +
+                        '*ESSENTIAL* \u2014 $85\nBasado en plantilla, una sola invitaci\u00f3n para todos, sencillo y bonito.\n\n' +
+                        '*DELUXE* \u2014 $105\nDise\u00f1o con nombre y n\u00famero de pases personalizados + 4 fotos + m\u00fasica y plataforma de env\u00edos.\n\n' +
+                        '*\u00c9LITE* \u2014 $130 \ud83d\udc51\nTodo lo del Deluxe + invitaciones ilimitadas + hasta 20 fotos + iconos animados, animaciones premium, fecha m\u00e1xima de confirmaci\u00f3n y m\u00e1s.\n\n' +
+                        '*\u00c9LITE PLUS* \u2014 $150 \ud83d\udc51\u2b50\nTodo lo del \u00c9lite + P\u00e1gina de Fotograf\u00edas Premium con QR para las mesas.';
+                    if (pkRec) pkText += '\n\n\u2b50 *Este es el que le recomendamos: ' + pkRec + '*';
+                    await sendText(userId, pkText);
+                    processingUsers.delete(userId);
+                    continue;
+                }
                 if (!estado) {
                     processingUsers.set(userId, Date.now());
                     clienteContador++;
@@ -637,8 +863,8 @@ async function startBot() {
                         if (t === 'xv') enviarSecuenciaXV(userId, phone).catch(err => { console.error(err.message); processingUsers.delete(userId); });
                         else enviarSecuencia(userId, false, t, phone).catch(err => { console.error(err.message); processingUsers.delete(userId); });
                     } else if (msgNorm === '4') {
-                        processingUsers.set(userId, Date.now()); estado.paso = 'guia_segmento';
-                        enviarGuiaGratuita(userId, false).catch(console.error); processingUsers.delete(userId);
+                        processingUsers.set(userId, Date.now()); estado.paso = 'quiz_evento';
+                        iniciarQuiz(userId).catch(console.error); processingUsers.delete(userId);
                     } else {
                         processingUsers.set(userId, Date.now());
                         enviarBienvenidaIngles(userId).catch(err => { console.error(err.message); processingUsers.delete(userId); });
@@ -682,6 +908,12 @@ async function startBot() {
                     }
                     continue;
                 }
+                if (estado.paso && estado.paso.startsWith('quiz_')) {
+                    processingUsers.set(userId, Date.now());
+                    await manejarQuiz(userId, messageText || '');
+                    processingUsers.delete(userId);
+                    continue;
+                }
                 if (estado.paso === 'bienvenida') {
                     const opciones = { '1': 'xv', '2': 'boda', '3': 'otro' };
                     if (opciones[msgNorm]) {
@@ -691,8 +923,8 @@ async function startBot() {
                         if (t === 'xv') enviarSecuenciaXV(userId, phone).catch(err => { console.error(err.message); processingUsers.delete(userId); });
                         else enviarSecuencia(userId, true, t, phone).catch(err => { console.error(err.message); processingUsers.delete(userId); });
                     } else if (msgNorm === '4') {
-                        processingUsers.set(userId, Date.now()); estado.paso = 'guia_segmento';
-                        enviarGuiaGratuita(userId, true).catch(console.error); processingUsers.delete(userId);
+                        processingUsers.set(userId, Date.now()); estado.paso = 'quiz_evento';
+                        iniciarQuiz(userId).catch(console.error); processingUsers.delete(userId);
                     } else {
                         estado.intentoMenu = (estado.intentoMenu || 0) + 1;
                         processingUsers.set(userId, Date.now());
