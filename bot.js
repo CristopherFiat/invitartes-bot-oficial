@@ -50,20 +50,41 @@ const CARACTERISTICAS_ELITE = [
     '🛥️ Soporte prioritario hasta el día del evento',
 ].join('\n');
 
+// URLs nuevas para ejemplos iniciales y bodaB
+const FIREBASE_SHOWERBABY    = 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/showerbaby.webp?alt=media&token=6d49b2bc-717d-47c6-958f-53a706d7a902';
+const FIREBASE_BAUTIZO       = 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/bautizo.webp?alt=media&token=4df6970b-9e79-411b-ab0e-c18f4020be5e';
+const FIREBASE_BODAPORTUGUESA= 'https://firebasestorage.googleapis.com/v0/b/invitartes-bot.firebasestorage.app/o/bodaportuguesa.webp?alt=media&token=a95158a3-90b9-4a67-8f50-026198ade886';
+
+// Ejemplos iniciales fijos (antes de preguntar tipo de evento)
+const EJEMPLOS_INICIALES = [
+    { img: FIREBASE_SHOWERBABY, caption: '🎉 *Ejemplo 1* ✨\n\nUna revelación de género llena de color, emoción y sorpresa. Cada invitado llegó listo para celebrar.\n👉 https://invitarts.com/revelacion-de-genero-una-celebracion-unica/' },
+    { img: FIREBASE_BAUTIZO,    caption: '👋 *Ejemplo 2* ✨\n\nSamara recibió una invitación a la altura de su gran día, con estilo propio y llena de detalles especiales.\n👉 https://invitarts.com/mis-xv-samara-macarena-una-celebracion-unica/' },
+];
+
 const EJEMPLOS = {
-    boda: [
-        { img: FIREBASE_URLS.imagenSobres,  caption: '✨ *Ejemplo real 1 — Boda* ✨\n\n💍 Juan Pablo & Adriana\n🔗 https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-y-adriana/' },
-        { img: FIREBASE_URLS.imagenBoda2,   caption: '💌 *Ejemplo real 2 — Boda* ✨\n\nHugo & Nickole\n👉 https://invitarts.com/boda-hugo-nickole-una-celebracion-unica-muestras/' },
+    // Boda par A (contador par): Juan Pablo + Hugo
+    bodaA: [
+        { img: FIREBASE_URLS.imagenSobres, caption: '💍 *Ejemplo 1 — Boda* ✨\n\nJuan Pablo y Adriana lograron que cada invitado sintiera que esa invitación fue hecha solo para él.\n👉 https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-y-adriana/' },
+        { img: FIREBASE_URLS.imagenBoda2,  caption: '💌 *Ejemplo 2 — Boda* ✨\n\nHugo y Nickole eligieron un estilo oscuro y elegante que dejó a todos sin palabras.\n👉 https://invitarts.com/boda-hugo-nickole-una-celebracion-unica-muestras/' },
+    ],
+    // Boda par B (contador impar): Liz + Hugo
+    bodaB: [
+        { img: FIREBASE_BODAPORTUGUESA,    caption: '🌹 *Ejemplo 1 — Boda* ✨\n\nLiz y José optaron por un diseño portugués romántico, cálido y lleno de detalles únicos.\n👉 https://invitarts.com/boda-liz-jose-una-celebracion-unica-muestra/' },
+        { img: FIREBASE_URLS.imagenBoda2,  caption: '💌 *Ejemplo 2 — Boda* ✨\n\nHugo y Nickole eligieron un estilo oscuro y elegante que dejó a todos sin palabras.\n👉 https://invitarts.com/boda-hugo-nickole-una-celebracion-unica-muestras/' },
     ],
     xv: [
-        { img: FIREBASE_URLS.imagenLucy,    caption: '*Ejemplo 1* 🌸✨\n\nLucy te invita a vivir su cuento de hadas. 👑\n👉 https://invitartes.com/erase-una-vez-mis-xv-anos-lucy-oficial/' },
-        { img: FIREBASE_URLS.imagenRafaela, caption: '*Ejemplo 2* 🌸✨\n\nRafaela te invita a descubrir cómo continúa su historia. 👑💕\n👉 https://invitartes.com/erase-una-vez-mis-xv-anios-rafaela/' },
+        { img: FIREBASE_URLS.imagenLucy,    caption: '👑 *Ejemplo 1 — XV Años* 🌸\n\nLucy convirtió su invitación en un cuento de hadas que sus invitados no querían cerrar.\n👉 https://invitartes.com/erase-una-vez-mis-xv-anos-lucy-oficial/' },
+        { img: FIREBASE_URLS.imagenRafaela, caption: '💕 *Ejemplo 2 — XV Años* 🌸\n\nRafaela eligió cada detalle y el resultado fue una invitación que contó su historia al deslizar.\n👉 https://invitartes.com/erase-una-vez-mis-xv-anios-rafaela/' },
     ],
     otro: [
-        { img: FIREBASE_URLS.imagenSobres,  caption: '✨ *Ejemplo real 1 — Boda* ✨\n🔗 https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-y-adriana/' },
-        { img: FIREBASE_URLS.imagenLia,     caption: '🌸 *Ejemplo real 2 — Quince años* 🌸\n🔗 https://invitartes.com/invitacion-xv-anos-lia-haro/' },
+        { img: FIREBASE_SHOWERBABY, caption: '🎉 *Ejemplo 1* ✨\n\nUna revelación de género llena de color, emoción y sorpresa. Cada invitado llegó listo para celebrar.\n👉 https://invitarts.com/revelacion-de-genero-una-celebracion-unica/' },
+        { img: FIREBASE_BAUTIZO,    caption: '👋 *Ejemplo 2* ✨\n\nSamara recibió una invitación a la altura de su gran día, con estilo propio y llena de detalles especiales.\n👉 https://invitarts.com/mis-xv-samara-macarena-una-celebracion-unica/' },
     ],
 };
+// Selector de par de boda segun clienteContador
+function getEjemplosBoda(contador) {
+    return (contador % 2 === 0) ? EJEMPLOS.bodaA : EJEMPLOS.bodaB;
+}
 
 function esMexico(phone) {
     return phone && phone.startsWith('52') && phone.length >= 12 && phone.length <= 13;
@@ -583,11 +604,21 @@ async function manejarQuizMenu(userId, msg) {
         // Ver otros paquetes — envía lista + luego datos de pago + seguimientos
         e.paso = 'libre'; e.conversacionLibre = true;
         const pkRec = e.paqueteRecomendado || null;
-        let pkText = '\ud83c\udf81 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas \ud83c\udfa8\n\n' +
-            '*ESSENTIAL* \u2014 $85\nBasado en plantilla, una sola invitaci\u00f3n para todos, sencillo y bonito.\n\n' +
-            '*DELUXE* \u2014 $105\nDise\u00f1o con nombre y n\u00famero de pases personalizados + 4 fotos + m\u00fasica y plataforma de env\u00edos.\n\n' +
-            '*\u00c9LITE* \u2014 $130 \ud83d\udc51\nTodo lo del Deluxe + invitaciones ilimitadas + hasta 20 fotos + iconos animados, animaciones premium, fecha m\u00e1xima de confirmaci\u00f3n y m\u00e1s.\n\n' +
-            '*\u00c9LITE PLUS* \u2014 $150 \ud83d\udc51\u2b50\nTodo lo del \u00c9lite + P\u00e1gina de Fotograf\u00edas Premium con QR para las mesas.';
+        const evPk = e.quizEvento || 'otro';
+        let pkText;
+        if (evPk === 'boda') {
+            pkText = '🎁 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas 🎨\n\n' +
+                '*ESSENTIAL* — $85\nBasado en plantilla, una sola invitación para todos, sin fotos, sencillo y bonito.\n👉 (Ejemplo ESSENTIAL) https://invitartes.com/invitacion-a-la-boda-de-javier-ivette/\n\n' +
+                '*DELUXE* — $105\nDiseño con nombre y número de pases personalizados + 4 fotos + música y plataforma de envíos.\n👉 (Ejemplo DELUXE) https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-y-adriana/\n\n' +
+                '*ÉLITE* — $130 👑\nTodo lo del Deluxe + *invitaciones ilimitadas* + hasta 20 fotos + íconos animados, animaciones premium, fecha máxima de confirmación y más.\n👉 (Ejemplo ÉLITE) https://invitarts.com/boda-liz-jose-una-celebracion-unica-muestra/\n\n' +
+                '*ÉLITE PLUS* — $150 👑⭐\nTodo lo del Élite + Página de Fotografías Premium con QR para las mesas.';
+        } else {
+            pkText = '🎁 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas 🎨\n\n' +
+                '*ESSENTIAL* — $85\nBasado en plantilla, una sola invitación para todos, sin fotos, sencillo y bonito.\n👉 (Ejemplo ESSENTIAL) https://invitartes.com/mi-bautizo-sol-isabella-muestra/\n\n' +
+                '*DELUXE* — $105\nDiseño con nombre y número de pases personalizados + 4 fotos + música y plataforma de envíos.\n👉 (Ejemplo DELUXE) https://invitarts.com/mis-xv-samara-macarena-una-celebracion-unica/\n\n' +
+                '*ÉLITE* — $130 👑\nTodo lo del Deluxe + *invitaciones ilimitadas* + hasta 20 fotos + íconos animados, animaciones premium, fecha máxima de confirmación y más.\n👉 (Ejemplo ÉLITE) https://invitarts.com/revelacion-de-genero-una-celebracion-unica/\n\n' +
+                '*ÉLITE PLUS* — $150 👑⭐\nTodo lo del Élite + Página de Fotografías Premium con QR para las mesas.';
+        }
         if (pkRec) pkText += '\n\n\u2b50 *El que le recomendamos seg\u00fan su evento: ' + pkRec + '*';
         await sendText(userId, pkText);
         await sleep(1200);
@@ -599,8 +630,9 @@ async function manejarQuizMenu(userId, msg) {
     if (t === '3') {
         // Ver ejemplos de invitaciones → luego menú de 2 opciones
         const evento = e.quizEvento || 'boda';
+        const ejemplosArr = (evento === 'boda') ? getEjemplosBoda(clienteContador) : (evento === 'xv' ? EJEMPLOS.xv : EJEMPLOS_INICIALES);
         await sendText(userId, 'Mire algunos ejemplos 😍 F\u00edjese c\u00f3mo cada invitaci\u00f3n cuenta su propia historia al deslizar. La suya puede ser as\u00ed, con sus colores y su canci\u00f3n.');
-        for (const ej of EJEMPLOS[evento]) {
+        for (const ej of ejemplosArr) {
             await sleep(800);
             await sendImage(userId, ej.img, ej.caption);
         }
@@ -661,11 +693,21 @@ async function manejarQuizMenu2(userId, msg) {
     if (t === '2') {
         e.paso = 'libre'; e.conversacionLibre = true;
         const pkRec = e.paqueteRecomendado || null;
-        let pkText = '\ud83c\udf81 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas \ud83c\udfa8\n\n' +
-            '*ESSENTIAL* \u2014 $85\nBasado en plantilla, una sola invitaci\u00f3n para todos, sencillo y bonito.\n\n' +
-            '*DELUXE* \u2014 $105\nDise\u00f1o con nombre y n\u00famero de pases personalizados + 4 fotos + m\u00fasica y plataforma de env\u00edos.\n\n' +
-            '*\u00c9LITE* \u2014 $130 \ud83d\udc51\nTodo lo del Deluxe + invitaciones ilimitadas + hasta 20 fotos + iconos animados, animaciones premium, fecha m\u00e1xima de confirmaci\u00f3n y m\u00e1s.\n\n' +
-            '*\u00c9LITE PLUS* \u2014 $150 \ud83d\udc51\u2b50\nTodo lo del \u00c9lite + P\u00e1gina de Fotograf\u00edas Premium con QR para las mesas.';
+        const evPk = e.quizEvento || 'otro';
+        let pkText;
+        if (evPk === 'boda') {
+            pkText = '🎁 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas 🎨\n\n' +
+                '*ESSENTIAL* — $85\nBasado en plantilla, una sola invitación para todos, sin fotos, sencillo y bonito.\n👉 (Ejemplo ESSENTIAL) https://invitartes.com/invitacion-a-la-boda-de-javier-ivette/\n\n' +
+                '*DELUXE* — $105\nDiseño con nombre y número de pases personalizados + 4 fotos + música y plataforma de envíos.\n👉 (Ejemplo DELUXE) https://invitartes.com/invitacion-a-la-boda-de-juan-pablo-y-adriana/\n\n' +
+                '*ÉLITE* — $130 👑\nTodo lo del Deluxe + *invitaciones ilimitadas* + hasta 20 fotos + íconos animados, animaciones premium, fecha máxima de confirmación y más.\n👉 (Ejemplo ÉLITE) https://invitarts.com/boda-liz-jose-una-celebracion-unica-muestra/\n\n' +
+                '*ÉLITE PLUS* — $150 👑⭐\nTodo lo del Élite + Página de Fotografías Premium con QR para las mesas.';
+        } else {
+            pkText = '🎁 *Nuestros Paquetes*\nTodas nuestras invitaciones son completamente personalizadas 🎨\n\n' +
+                '*ESSENTIAL* — $85\nBasado en plantilla, una sola invitación para todos, sin fotos, sencillo y bonito.\n👉 (Ejemplo ESSENTIAL) https://invitartes.com/mi-bautizo-sol-isabella-muestra/\n\n' +
+                '*DELUXE* — $105\nDiseño con nombre y número de pases personalizados + 4 fotos + música y plataforma de envíos.\n👉 (Ejemplo DELUXE) https://invitarts.com/mis-xv-samara-macarena-una-celebracion-unica/\n\n' +
+                '*ÉLITE* — $130 👑\nTodo lo del Deluxe + *invitaciones ilimitadas* + hasta 20 fotos + íconos animados, animaciones premium, fecha máxima de confirmación y más.\n👉 (Ejemplo ÉLITE) https://invitarts.com/revelacion-de-genero-una-celebracion-unica/\n\n' +
+                '*ÉLITE PLUS* — $150 👑⭐\nTodo lo del Élite + Página de Fotografías Premium con QR para las mesas.';
+        }
         if (pkRec) pkText += '\n\n\u2b50 *El que le recomendamos seg\u00fan su evento: ' + pkRec + '*';
         await sendText(userId, pkText);
         await sleep(1200);
